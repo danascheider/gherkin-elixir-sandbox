@@ -2,9 +2,13 @@ defmodule Gherkin.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :gherkin_elixir_sandbox,
+    [app: :gherkin,
      version: "0.1.0",
      elixir: "~> 1.3",
+     maintainers: [ "dana.scheider@gmail.com" ],
+     licenses: [ "MIT" ],
+     description: description(),
+     links: %{"GitHub" => "https://github.com/cucumber/gherkin-elixir", "Docs" => "http://cucumber.io"},
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -28,5 +32,11 @@ defmodule Gherkin.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     []
+  end
+
+  defp description do 
+    """
+    The Elixir implementation of Gherkin.
+    """
   end
 end
