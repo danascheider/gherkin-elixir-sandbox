@@ -1,2 +1,0 @@
-defmodule Gherkin do
-end
