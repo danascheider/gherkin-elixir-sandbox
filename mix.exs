@@ -31,7 +31,10 @@ defmodule Gherkin.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:json, "~> 0.3.0"},
+      {:observer_cli, "~> 1.0.7"}
+    ]
   end
 
   defp description do 
