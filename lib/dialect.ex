@@ -8,11 +8,11 @@ defmodule Gherkin.Dialect do
 
   def for(lang), do: Map.get(@dialects, lang)
 
-  def feature_keywords(lang) do 
-    Gherkin.Dialect.for(lang) |> Map.get("feature")
-  end
+  def feature_keywords(lang), do: fetch(lang, "feature")
 
-  def scenario_keywords(lang) do 
-    Gherkin.Dialect.for(lang) |> Map.get("scenario")
-  end
+  def scenario_keywords(lang), do: fetch(lang, "scenario")
+
+  def scenario_outline_keywords(lang), do: fetch(lang, "scenarioOutline")
+
+  defp fetch(lang, keyword), do: Gherkin.Dialect.for(lang) |> Map.get(keyword)
 end

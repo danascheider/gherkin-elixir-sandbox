@@ -22,4 +22,11 @@ defmodule GherkinDialectTest do
 
     assert Gherkin.Dialect.scenario_keywords("it") == [ "Scenario" ]
   end
+
+  test "scenario_outline_keywords returns scenario outline keywords" do 
+    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
+    {_, dialects} = JSON.decode(json)
+
+    assert Gherkin.Dialect.scenario_outline_keywords("it") == [ "Schema dello scenario" ]
+  end
 end
