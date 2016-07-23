@@ -14,5 +14,7 @@ defmodule Gherkin.Dialect do
 
   def scenario_outline_keywords(lang), do: fetch(lang, "scenarioOutline")
 
+  def examples_keywords(lang), do: fetch(lang, "examples")
+
   defp fetch(lang, keyword), do: Gherkin.Dialect.for(lang) |> Map.get(keyword)
 end
