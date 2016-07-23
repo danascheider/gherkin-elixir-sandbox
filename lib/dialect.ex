@@ -18,5 +18,9 @@ defmodule Gherkin.Dialect do
 
   def background_keywords(lang), do: fetch(lang, "background")
 
+  def given_keywords(lang), do: fetch(lang, "given")
+
+  def when_keywords(lang), do: fetch(lang, "when")
+
   defp fetch(lang, keyword), do: Gherkin.Dialect.for(lang) |> Map.get(keyword)
 end

@@ -10,37 +10,30 @@ defmodule GherkinDialectTest do
   end
 
   test "feature_keywords returns feature keywords" do 
-    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, dialects} = JSON.decode(json)
-
     assert Gherkin.Dialect.feature_keywords("it") == [ "Funzionalità" ]
   end
 
   test "scenario_keywords returns scenario keywords" do 
-    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, dialects} = JSON.decode(json)
-
     assert Gherkin.Dialect.scenario_keywords("it") == [ "Scenario" ]
   end
 
   test "scenario_outline_keywords returns scenario outline keywords" do 
-    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, dialects} = JSON.decode(json)
-
     assert Gherkin.Dialect.scenario_outline_keywords("it") == [ "Schema dello scenario" ]
   end
 
-  test "examples_keywords returns scenario outline keywords" do 
-    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, dialects} = JSON.decode(json)
-
+  test "examples_keywords returns examples keywords" do 
     assert Gherkin.Dialect.examples_keywords("it") == [ "Esempi" ]
   end
 
-  test "background_keywords returns scenario outline keywords" do 
-    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, dialects} = JSON.decode(json)
-
+  test "background_keywords returns background keywords" do 
     assert Gherkin.Dialect.background_keywords("it") == [ "Contesto" ]
+  end
+
+  test "given_keywords returns given keywords" do 
+    assert Gherkin.Dialect.given_keywords("it") == [ "* ", "Dato ", "Data ", "Dati ", "Date " ]
+  end
+
+  test "when_keywords returns when keywords" do 
+    assert Gherkin.Dialect.when_keywords("it") == [ "* ", "Quando " ]
   end
 end
