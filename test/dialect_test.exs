@@ -40,4 +40,8 @@ defmodule GherkinDialectTest do
   test "then_keywords returns then keywords" do 
     assert Gherkin.Dialect.then_keywords("it") == [ "* ", "Allora " ]
   end
+
+  test "and_keywords returns and keywords" do 
+    assert Gherkin.Dialect.and_keywords("it") == [ "* ", "E " ]
+  end
 end
