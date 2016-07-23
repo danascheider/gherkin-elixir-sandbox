@@ -26,5 +26,7 @@ defmodule Gherkin.Dialect do
 
   def and_keywords(lang), do: fetch(lang, "and")
 
+  def but_keywords(lang), do: fetch(lang, "but")
+
   defp fetch(lang, keyword), do: Gherkin.Dialect.for(lang) |> Map.get(keyword)
 end

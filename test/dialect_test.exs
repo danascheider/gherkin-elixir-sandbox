@@ -44,4 +44,8 @@ defmodule GherkinDialectTest do
   test "and_keywords returns and keywords" do 
     assert Gherkin.Dialect.and_keywords("it") == [ "* ", "E " ]
   end
+
+  test "but_keywords returns but keywords" do 
+    assert Gherkin.Dialect.but_keywords("it") == [ "* ", "Ma " ]
+  end
 end
