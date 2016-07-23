@@ -9,10 +9,17 @@ defmodule GherkinDialectTest do
     assert Gherkin.Dialect.for("it") == Map.get(dialects, "it")
   end
 
-  test "returns feature keywords" do 
+  test "feature_keywords returns feature keywords" do 
     {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
     {_, dialects} = JSON.decode(json)
 
     assert Gherkin.Dialect.feature_keywords("it") == [ "Funzionalità" ]
+  end
+
+  test "scenario_keywords returns scenario keywords" do 
+    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
+    {_, dialects} = JSON.decode(json)
+
+    assert Gherkin.Dialect.scenario_keywords("it") == [ "Scenario" ]
   end
 end

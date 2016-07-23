@@ -11,4 +11,8 @@ defmodule Gherkin.Dialect do
   def feature_keywords(lang) do 
     Gherkin.Dialect.for(lang) |> Map.get("feature")
   end
+
+  def scenario_keywords(lang) do 
+    Gherkin.Dialect.for(lang) |> Map.get("scenario")
+  end
 end
