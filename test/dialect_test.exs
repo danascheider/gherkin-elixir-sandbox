@@ -2,12 +2,17 @@ defmodule GherkinDialectTest do
   use ExUnit.Case
   doctest Gherkin.Dialect
 
-  test "dialects returns the dialects file" do 
+  test "returns keywords for the language" do 
     {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
-    {_, contents} = JSON.decode(json)
+    {_, dialects} = JSON.decode(json)
 
-    # {_, json}     = JSON.decode(contents)
+    assert Gherkin.Dialect.for("it") == Map.get(dialects, "it")
+  end
 
-    assert Gherkin.Dialect.dialects == contents
+  test "returns feature keywords" do 
+    {_, json}     = Path.expand("lib/gherkin-languages.json") |> File.read
+    {_, dialects} = JSON.decode(json)
+
+    assert Gherkin.Dialect.feature_keywords("it") == [ "Funzionalità" ]
   end
 end

@@ -1,9 +1,14 @@
 defmodule Gherkin.Dialect do 
   @dialect_path Path.expand("./lib/gherkin-languages.json")
 
-  def dialects do 
-    {_, json}     = File.read(@dialect_path)
-    {_, contents} = JSON.decode(json)
-    contents
+  {_, json}     = File.read(@dialect_path)
+  {_, contents} = JSON.decode(json)
+
+  @dialects contents
+
+  def for(lang), do: Map.get(@dialects, lang)
+
+  def feature_keywords(lang) do 
+    Gherkin.Dialect.for(lang) |> Map.get("feature")
   end
 end
