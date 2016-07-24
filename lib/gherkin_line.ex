@@ -9,6 +9,10 @@ defmodule Gherkin.GherkinLine do
     String.length(line_text(line)) - String.length(trimmed_text(line))
   end
 
+  def starts_with?(line, keyword) do 
+    String.starts_with?(trimmed_text(line), keyword)
+  end
+
   defp line_text(line) do 
     line.text
   end
