@@ -5,8 +5,8 @@ defmodule Gherkin.AstNode do
   end
 
   def get_single(node, key) do 
-    {_, value} = Map.get(node, :sub_items) |> List.keyfind(key, 0)
-    value
+    child = Map.get(node, :sub_items) |> List.keyfind(key, 0)
+    child
   end
 
   def get_items(node, key) do 
