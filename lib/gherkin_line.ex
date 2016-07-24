@@ -9,6 +9,14 @@ defmodule Gherkin.GherkinLine do
     trimmed_text(line) == ""
   end
 
+  def get_line_text(line, indent_to_remove) do
+    if indent_to_remove > String.length(line.text) || indent_to_remove < 0 do
+      line.text
+    else
+      String.slice(line.text, indent_to_remove..String.length(line.text) - 1)
+    end
+  end
+
   def indent(line) do 
     String.length(line_text(line)) - String.length(trimmed_text(line))
   end

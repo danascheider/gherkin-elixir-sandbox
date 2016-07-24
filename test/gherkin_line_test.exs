@@ -61,4 +61,22 @@ defmodule GherkinLineTest do
 
     assert Gherkin.GherkinLine.empty?(line) == false
   end
+
+  test ".get_line_text returns the string when the indent is less than 0" do 
+    line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.get_line_text(line, -3) == line.text
+  end
+
+  test ".get_line_text returns the string when the indent is greater than the length" do
+    line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.get_line_text(line, 100) == line.text
+  end
+
+  test ".get_line_text returns the trimmed string" do 
+    line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.get_line_text(line, 1) == " Scenario foo bar\n"
+  end
 end
