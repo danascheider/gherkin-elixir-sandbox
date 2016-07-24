@@ -8,4 +8,8 @@ defmodule Gherkin.GherkinLine do
   def trimmed_text(line) do 
     String.trim_leading(line.text)
   end
+
+  def indent(line) do 
+    String.length(line_text(line)) - String.length(trimmed_text(line))
+  end
 end
