@@ -8,4 +8,10 @@ defmodule Gherkin.AstNode do
     {_, value} = Map.get(node, :sub_items) |> List.keyfind(key, 0)
     value
   end
+
+  def get_items(node, key) do 
+    items = Map.get(node, :sub_items) 
+              |> Enum.filter(fn(x) -> Tuple.to_list(x) |> List.first == key end)
+    items
+  end
 end

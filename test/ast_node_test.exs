@@ -14,4 +14,10 @@ defmodule GherkinAstNodeTest do
 
     assert Gherkin.AstNode.get_single(node, :ScenarioHeader) == %{"bar" => "baz"}
   end
+
+  test ".get_items returns all matching children" do 
+    node = %{sub_items: [{:FeatureLine, %{:foo => "bar"}}, {:ScenarioHeader, %{"bar" => "baz"}}, {:ScenarioHeader, %{"baz" => "qux"}}], rule_type: :FeatureHeader}
+
+    assert Gherkin.AstNode.get_items(node, :ScenarioHeader) == [{:ScenarioHeader, %{"bar" => "baz"}}, {:ScenarioHeader, %{"baz" => "qux"}}]
+  end
 end
