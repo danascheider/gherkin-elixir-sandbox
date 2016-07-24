@@ -4,4 +4,8 @@ defmodule Gherkin.GherkinLine do
   def line_text(line) do 
     line.text
   end
+
+  def trimmed_text(line) do 
+    String.trim_leading(line.text)
+  end
 end
