@@ -17,6 +17,11 @@ defmodule Gherkin.GherkinLine do
     starts_with?(line, "#{keyword}:")
   end
 
+  def get_rest_stripped(line, index) do 
+    text = trimmed_text(line)
+    String.slice(text, index..String.length(text) - 1) |> String.trim
+  end
+
   defp line_text(line) do 
     line.text
   end
