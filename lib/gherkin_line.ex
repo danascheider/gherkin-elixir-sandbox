@@ -13,6 +13,10 @@ defmodule Gherkin.GherkinLine do
     String.starts_with?(trimmed_text(line), keyword)
   end
 
+  def starts_with_title_keyword?(line, keyword) do 
+    starts_with?(line, "#{keyword}:")
+  end
+
   defp line_text(line) do 
     line.text
   end

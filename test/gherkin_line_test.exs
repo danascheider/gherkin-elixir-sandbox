@@ -25,4 +25,16 @@ defmodule GherkinLineTest do
 
     assert Gherkin.GherkinLine.starts_with?(line, "Feature") == false
   end
+
+  test ".starts_with_title_keyword? returns true" do 
+    line = %Gherkin.GherkinLine{text: "  Scenario: Foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.starts_with_title_keyword?(line, "Scenario") == true
+  end
+
+  test ".starts_with_title_keyword? returns false" do 
+    line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.starts_with_title_keyword?(line, "Scenario") == false
+  end
 end
