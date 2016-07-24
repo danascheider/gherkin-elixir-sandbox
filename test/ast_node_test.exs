@@ -10,7 +10,7 @@ defmodule GherkinAstNodeTest do
   end
 
   test ".get_single returns the correct child" do 
-    node = %{sub_items: [{:FeatureLine, %{:foo => "bar"}}, {:ScenarioHeader, %{"bar" => "baz"}}], rule_type: :FeatureHeader}
+    node = %{sub_items: [{:FeatureLine, %{:foo => "bar"}}, {:ScenarioHeader, %{"bar" => "baz"}}, {:ScenarioHeader, %{"baz" => "qux"}}], rule_type: :FeatureHeader}
 
     assert Gherkin.AstNode.get_single(node, :ScenarioHeader) == %{"bar" => "baz"}
   end
