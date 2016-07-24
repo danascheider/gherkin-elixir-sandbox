@@ -1,7 +1,10 @@
 defmodule Gherkin.AstNode do 
+
+  defstruct sub_items: [], rule_type: :FeatureHeader
+
   def add(node, child) do 
     new_sub_items = Map.get(node, :sub_items) |> List.insert_at(-1, child)
-    Map.merge(node, %{sub_items: new_sub_items})
+    %Gherkin.AstNode{node | sub_items: new_sub_items}
   end
 
   def get_single(node, key) do 
