@@ -5,6 +5,10 @@ defmodule Gherkin.GherkinLine do
     String.trim_leading(line.text)
   end
 
+  def empty?(line) do 
+    trimmed_text(line) == ""
+  end
+
   def indent(line) do 
     String.length(line_text(line)) - String.length(trimmed_text(line))
   end
@@ -17,7 +21,7 @@ defmodule Gherkin.GherkinLine do
     starts_with?(line, "#{keyword}:")
   end
 
-  def get_rest_stripped(line, index) do 
+  def get_rest_trimmed(line, index) do 
     text = trimmed_text(line)
     String.slice(text, index..String.length(text) - 1) |> String.trim
   end

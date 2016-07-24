@@ -38,15 +38,27 @@ defmodule GherkinLineTest do
     assert Gherkin.GherkinLine.starts_with_title_keyword?(line, "Scenario") == false
   end
 
-  test ".get_rest_stripped returns stripped string" do 
+  test ".get_rest_trimmed returns stripped string" do 
     line = %Gherkin.GherkinLine{text: "  Scenario: Foo bar\n", line_number: 3}
 
-    assert Gherkin.GherkinLine.get_rest_stripped(line, 9) == "Foo bar"
+    assert Gherkin.GherkinLine.get_rest_trimmed(line, 9) == "Foo bar"
   end
 
-  test ".get_rest_stripped shortens string the prescribed amount" do 
+  test ".get_rest_trimmed shortens string the prescribed amount" do 
     line = %Gherkin.GherkinLine{text: "  Scenario: Foo bar\n", line_number: 3}
 
-    assert Gherkin.GherkinLine.get_rest_stripped(line, 2) == "enario: Foo bar"
+    assert Gherkin.GherkinLine.get_rest_trimmed(line, 2) == "enario: Foo bar"
+  end
+
+  test ".empty? returns true when empty" do 
+    line = %Gherkin.GherkinLine{text: "  \n", line_number: 3}
+
+    assert Gherkin.GherkinLine.empty?(line) == true
+  end
+
+  test ".empty? returns false when not empty" do 
+    line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
+
+    assert Gherkin.GherkinLine.empty?(line) == false
   end
 end
