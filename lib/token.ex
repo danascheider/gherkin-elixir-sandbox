@@ -17,4 +17,8 @@ defmodule Gherkin.Token do
       Gherkin.GherkinLine.get_line_text(token.line, -1)
     end
   end
+
+  def get_location(token), do: token.location
+
+  def get_location(token, column), do: Map.merge(token.location, %{column: column})
 end
