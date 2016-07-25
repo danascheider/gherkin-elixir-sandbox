@@ -1,6 +1,6 @@
 defmodule Gherkin.Token do 
   defstruct line: nil, 
-            location: {}, 
+            location: %{line: 1, column: 1}, 
             matched_type: :FeatureHeader, 
             matched_text: "", 
             matched_keyword: "Feature",
