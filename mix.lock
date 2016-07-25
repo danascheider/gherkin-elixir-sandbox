@@ -1,0 +1,3 @@
+%{"json": {:hex, :json, "0.3.3", "373eb4f7321f898ad6772999f30daf65f9f38e1d3dd4d798d7a82d3b123fe1d3", [:mix], []},
+  "observer_cli": {:hex, :observer_cli, "1.0.7", "54013653c72e75ff3b4b487342dfe56715c9749ff9c31a7de8f84d18a09e1c3c", [:mix, :rebar], [{:recon, "~> 2.3.1", [hex: :recon, optional: false]}]},
+  "recon": {:hex, :recon, "2.3.1", "281f2cbb439fe3c043773ee6c83172abd80326dcc6153f6430e4d4e6b14d7e9d", [:rebar3], []}}
