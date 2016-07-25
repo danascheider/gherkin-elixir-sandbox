@@ -39,6 +39,22 @@ defmodule Gherkin.AstBuilder do
       rows: rows
     }
   end
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Background}) do
+    {_, background_line} = Gherkin.AstNode.get_token(ast_node, :BackgroundLine)
+    {_, description}     = Gherkin.AstNode.get_single(ast_node, :Description)
+    steps                = Gherkin.AstNode.get_tokens(ast_node, :Step)
+                             |> Enum.map(fn({_, step}) -> step end)
+
+    %{
+      type: ast_node.rule_type,
+      location: background_line.location,
+      keyword: background_line.matched_keyword,
+      name: background_line.matched_text,
+      description: description,
+      steps: steps
+    }
+  end
 end
 
 defmodule Gherkin.AstBuilderException do 

@@ -48,7 +48,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node when rule type is :DataTable returns a list" do
+  test ".transform_node when rule type is :DataTable returns the appropriate map" do
     ast_node = %Gherkin.AstNode{
       rule_type: :DataTable,
       sub_items: [
@@ -67,6 +67,28 @@ defmodule GherkinAstBuilderTest do
       type: :DataTable,
       location: %{line: 1, column: 1},
       rows: Gherkin.DataTable.get_table_rows(ast_node)
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
+
+  test ".transform_node when rule type is :Background returns the appropriate map" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :Background,
+      sub_items: [
+        {:BackgroundLine, %Gherkin.Token{matched_type: :BackgroundLine, matched_keyword: "* ", matched_text: "Hello"}},
+        {:Step, %Gherkin.Token{matched_type: :Step, matched_keyword: "* ", matched_text: "Foobar"}},
+        {:Description, %Gherkin.Token{matched_type: :Description}}
+      ]
+    }
+
+    expected_output = %{
+      type: :Background,
+      location: %{column: 1, line: 1},
+      keyword: "* ",
+      name: "Hello",
+      description: %Gherkin.Token{matched_type: :Description},
+      steps: [%Gherkin.Token{matched_type: :Step, matched_keyword: "* ", matched_text: "Foobar"}]
     }
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
