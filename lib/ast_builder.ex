@@ -29,6 +29,16 @@ defmodule Gherkin.AstBuilder do
       contentType: content_type
     }
   end
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DataTable}) do
+    rows = Gherkin.DataTable.get_table_rows(ast_node)
+
+    %{
+      type: ast_node.rule_type,
+      location: List.first(rows).location,
+      rows: rows
+    }
+  end
 end
 
 defmodule Gherkin.AstBuilderException do 
