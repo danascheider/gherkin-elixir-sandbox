@@ -25,4 +25,20 @@ defmodule GherkinDataTableTest do
       Gherkin.DataTable.ensure_cell_count(rows) 
     end)
   end
+
+  test ".get_cells returns the cells in a row" do
+    cells  = [
+      %Gherkin.Token{matched_type: :TableCell, location: %{line: 4, column: 5}, matched_text: "foo"},
+      %Gherkin.Token{matched_type: :TableCell, location: %{line: 4, column: 12}, matched_text: "bar"}
+    ]
+
+    row    = %Gherkin.Token{matched_type: :TableRow, location: %{line: 3, column: 13}, matched_items: cells}
+
+    output = [
+      %{location: %{column: 5, line: 4}, type: :TableCell, value: "foo"},
+      %{location: %{column: 12, line: 4}, type: :TableCell, value: "bar"}
+    ]
+
+    assert Gherkin.DataTable.get_cells(row) == output
+  end
 end
