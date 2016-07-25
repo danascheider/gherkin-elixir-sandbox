@@ -30,3 +30,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 end
+
+defmodule Gherkin.AstBuilderException do 
+  defexception message: "Error building AST"
+end
