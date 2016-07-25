@@ -9,4 +9,12 @@ defmodule Gherkin.Token do
             matched_gherkin_dialect: "en"
 
   def eof?(token), do: token.line == nil
+
+  def token_value(token) do 
+    if eof?(token) do 
+      "EOF"
+    else
+      Gherkin.GherkinLine.get_line_text(token.line, -1)
+    end
+  end
 end

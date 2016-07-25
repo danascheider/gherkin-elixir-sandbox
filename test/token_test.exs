@@ -9,8 +9,22 @@ defmodule GherkinTokenTest do
   end
 
   test ".eof? returns false if line is defined" do 
-    token = %Gherkin.Token{line: 4}
+    line  = %Gherkin.GherkinLine{text: "  Scenario: Foo bar"}
+    token = %Gherkin.Token{line: line}
 
     assert Gherkin.Token.eof?(token) == false
+  end
+
+  test ".token_value returns 'EOF' if EOF" do 
+    token = %Gherkin.Token{line: nil}
+
+    assert Gherkin.Token.token_value(token) == "EOF"
+  end
+
+  test ".token_value returns the line text" do 
+    line  = %Gherkin.GherkinLine{text: "  Scenario: Foo bar"}
+    token = %Gherkin.Token{line: line}
+
+    assert Gherkin.Token.token_value(token) == "  Scenario: Foo bar"
   end
 end
