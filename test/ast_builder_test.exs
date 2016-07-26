@@ -106,10 +106,46 @@ defmodule GherkinAstBuilderTest do
       rule_type: :ScenarioDefinition,
       sub_items: [
         {:Tags, tag_node},
-        {:Scenario, %Gherkin.Token{matched_type: :Scenario}}
-      ],
+        {:Scenario, %Gherkin.AstNode{
+          rule_type: :Scenario, sub_items: [
+            {:ScenarioLine, %Gherkin.Token{matched_type: :ScenarioLine, location: %{line: 2, column: 3}, matched_keyword: "* ", matched_text: "Foo bar"}},
+            {:Description, %Gherkin.Token{matched_type: :Description}},
+            {:Step, %Gherkin.Token{matched_type: :Step}},
+            {:Step, %Gherkin.Token{matched_type: :Step}}
+          ]
+        }}
+      ]
     }
 
-    assert Gherkin.AstBuilder.transform_node(ast_node) == [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+    tags = [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+
+    expected_output = %{
+      type: :ScenarioDefinition,
+      tags: tags,
+      location: %{line: 2, column: 3},
+      keyword: "* ",
+      name: "Foo bar",
+      steps: [%Gherkin.Token{matched_type: :Step}, %Gherkin.Token{matched_type: :Step}],
+      description: %Gherkin.Token{matched_type: :Description}
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
+
+  test ".transform_node when rule type is :ScenarioDefinition with ScenarioOutline returns the appropriate map" do
+    tag_node = %Gherkin.AstNode{
+      rule_type: :Tags,
+      sub_items: [
+        {:TagLine, %Gherkin.Token{matched_type: :TagLine, matched_items: [%Gherkin.Token{matched_type: :Tag, location: %{line: 1, column: 14}, matched_text: "Foo bar"}]}}
+      ]
+    }
+
+    ast_node = %Gherkin.AstNode{
+      rule_type: :ScenarioDefinition,
+      sub_items: [
+        {:Tags, tag_node},
+        {:ScenarioOutline, %Gherkin.Token{matched_type: :ScenarioOutline}}
+      ]
+    }
   end
 end

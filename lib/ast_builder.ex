@@ -57,7 +57,25 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ScenarioDefinition}) do
-    get_tags(ast_node)
+    tags = get_tags(ast_node)
+    {_, scenario_node} = Gherkin.AstNode.get_single(ast_node, :Scenario)
+
+    if scenario_node != nil do
+      {_, scenario_line} = Gherkin.AstNode.get_token(scenario_node, :ScenarioLine)
+      {_, description}   = Gherkin.AstNode.get_token(scenario_node, :Description)
+      steps              = Gherkin.AstNode.get_tokens(scenario_node, :Step)
+                             |> Enum.map(fn({_, step}) -> step end)
+
+      %{
+        type: ast_node.rule_type,
+        tags: tags,
+        location: Gherkin.Token.get_location(scenario_line),
+        keyword: scenario_line.matched_keyword,
+        name: scenario_line.matched_text,
+        description: description,
+        steps: steps
+      }
+    end
   end
 
   defp get_tags(ast_node) do
