@@ -58,9 +58,31 @@ defmodule Gherkin.AstBuilder do
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ScenarioDefinition}) do
     tags = get_tags(ast_node)
-    {_, scenario_node} = Gherkin.AstNode.get_single(ast_node, :Scenario)
 
-    if scenario_node != nil do
+    if Gherkin.AstNode.get_single(ast_node, :Scenario) == nil do
+      {_, scenario_outline_node} = Gherkin.AstNode.get_single(ast_node, :ScenarioOutline)
+
+      if !scenario_outline_node, do: raise "Internal grammar error"
+
+      {_, scenario_outline_line} = Gherkin.AstNode.get_single(scenario_outline_node, :ScenarioOutlineLine)
+      {_, description}           = Gherkin.AstNode.get_single(scenario_outline_node, :Description)
+      steps                      = Gherkin.AstNode.get_tokens(scenario_outline_node, :Step)
+                                     |> Enum.map(fn({_, step}) -> step end)
+      examples                   = Gherkin.AstNode.get_tokens(scenario_outline_node, :ExamplesDefinition)
+                                     |> Enum.map(fn({_, step}) -> step end)
+
+      %{
+        type: scenario_outline_node.rule_type,
+        tags: tags,
+        location: scenario_outline_line.location,
+        keyword: scenario_outline_line.matched_keyword,
+        name: scenario_outline_line.matched_text,
+        description: description,
+        steps: steps,
+        examples: examples
+      }
+    else
+      {_, scenario_node} = Gherkin.AstNode.get_single(ast_node, :Scenario)
       {_, scenario_line} = Gherkin.AstNode.get_token(scenario_node, :ScenarioLine)
       {_, description}   = Gherkin.AstNode.get_token(scenario_node, :Description)
       steps              = Gherkin.AstNode.get_tokens(scenario_node, :Step)

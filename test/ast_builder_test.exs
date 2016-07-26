@@ -144,8 +144,41 @@ defmodule GherkinAstBuilderTest do
       rule_type: :ScenarioDefinition,
       sub_items: [
         {:Tags, tag_node},
-        {:ScenarioOutline, %Gherkin.Token{matched_type: :ScenarioOutline}}
+        {:ScenarioOutline, %Gherkin.AstNode{
+          rule_type: :ScenarioOutline, 
+          sub_items: [
+              {:Description, %Gherkin.Token{
+                  matched_type: :Description
+                }
+              },
+              {:ScenarioOutlineLine, %Gherkin.Token{
+                  matched_type: :ScenarioOutlineLine,
+                  matched_keyword: "* ",
+                  matched_text: "Foobar",
+                  location: %{line: 2, column: 14}
+                }
+              },
+              {:Step, %Gherkin.Token{matched_type: :Step}},
+              {:ExamplesDefinition, %Gherkin.Token{matched_type: :ExamplesDefinition}}
+            ]
+          }
+        }
       ]
     }
+
+    tags = [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+
+    expected_output = %{
+      type: :ScenarioOutline,
+      tags: tags,
+      location: %{line: 2, column: 14},
+      keyword: "* ",
+      name: "Foobar",
+      description: %Gherkin.Token{matched_type: :Description},
+      steps: [%Gherkin.Token{matched_type: :Step}],
+      examples: [%Gherkin.Token{matched_type: :ExamplesDefinition}]
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 end
