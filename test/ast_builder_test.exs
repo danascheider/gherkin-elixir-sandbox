@@ -93,4 +93,23 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
+
+  test ".transform_node when rule type is :ScenarioDefinition with Scenario returns the appropriate map" do
+    tag_node = %Gherkin.AstNode{
+      rule_type: :Tags,
+      sub_items: [
+        {:TagLine, %Gherkin.Token{matched_type: :TagLine, matched_items: [%Gherkin.Token{matched_type: :Tag, location: %{line: 1, column: 14}, matched_text: "Foo bar"}]}}
+      ]
+    }
+
+    ast_node = %Gherkin.AstNode{
+      rule_type: :ScenarioDefinition,
+      sub_items: [
+        {:Tags, tag_node},
+        {:Scenario, %Gherkin.Token{matched_type: :Scenario}}
+      ],
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+  end
 end

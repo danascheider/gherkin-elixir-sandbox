@@ -55,6 +55,31 @@ defmodule Gherkin.AstBuilder do
       steps: steps
     }
   end
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ScenarioDefinition}) do
+    get_tags(ast_node)
+  end
+
+  defp get_tags(ast_node) do
+    {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
+
+    if tags_node == nil do
+      []
+    else
+      tokens = Gherkin.AstNode.get_tokens(tags_node, :TagLine)
+                 |> Enum.map(fn({_, item}) -> item end)
+                 |> Enum.flat_map(fn(item) -> item.matched_items end)
+                 |> Enum.map(fn(item) -> 
+                      %{
+                        type: :Tag,
+                        location: Gherkin.Token.get_location(item),
+                        name: item.matched_text
+                      }
+                    end)
+
+      tokens
+    end
+  end
 end
 
 defmodule Gherkin.AstBuilderException do 
