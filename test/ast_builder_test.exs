@@ -45,6 +45,12 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.end_rule(stack) == expected_output
   end
 
+  test ".build\\1 when the token is a comment returns the comment in a list" do
+    token = %Gherkin.Token{matched_type: :Comment, matched_text: "Foo bar baz", location: %{column: 4, line: 12}}
+
+    assert Gherkin.AstBuilder.build(token) == [%{type: :Comment, location: %{column: 4, line: 12}, text: "Foo bar baz"}]
+  end
+
   test ".current_node\\1 returns the last item in the stack" do
     stack = [%Gherkin.AstNode{rule_type: :Feature}, %Gherkin.AstNode{rule_type: :FeatureHeader}]
 

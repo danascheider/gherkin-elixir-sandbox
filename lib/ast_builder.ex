@@ -10,6 +10,16 @@ defmodule Gherkin.AstBuilder do
     current_node(new_stack) |> Gherkin.AstNode.add(transform_node(node_to_add))
   end
 
+  def build(token) do
+    [
+      %{
+        type: :Comment,
+        location: token.location,
+        text: token.matched_text
+      }
+    ]
+  end
+
   def current_node(stack), do: List.last(stack)
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step}) do
