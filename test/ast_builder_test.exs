@@ -231,7 +231,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node\\1 when rule type is ExamplesTable returns the appropriate map" do
+  test ".transform_node\\1 when rule type is :ExamplesTable returns the appropriate map" do
     table    = %Gherkin.AstNode{
       rule_type: :ExamplesTable,
       sub_items: [
@@ -247,5 +247,20 @@ defmodule GherkinAstBuilderTest do
     }
 
     assert Gherkin.AstBuilder.transform_node(table) == expected_output
+  end
+
+  test ".transform_node\\1 when rule type is :Description returns the description" do
+    description = %Gherkin.AstNode{
+      rule_type: :Description,
+      sub_items: [
+        {:Other, %Gherkin.Token{matched_type: :Other, line: %Gherkin.GherkinLine{text: "Foo"}}},
+        {:Other, %Gherkin.Token{matched_type: :Other, line: %Gherkin.GherkinLine{text: "Bar"}}},
+        {:Other, %Gherkin.Token{matched_type: :Other, line: %Gherkin.GherkinLine{text: ""}}}
+      ]
+    }
+
+    expected_output = "Foo\nBar"
+
+    assert Gherkin.AstBuilder.transform_node(description) == expected_output
   end
 end
