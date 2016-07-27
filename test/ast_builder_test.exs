@@ -263,4 +263,10 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(description) == expected_output
   end
+
+  test ".transform_node\\1 when rule type is :Feature and no header returns nil" do
+    ast_node = %Gherkin.AstNode{rule_type: :Feature}
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == nil
+  end
 end

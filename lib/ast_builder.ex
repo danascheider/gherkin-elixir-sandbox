@@ -132,6 +132,10 @@ defmodule Gherkin.AstBuilder do
       |> String.trim
   end
 
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Feature}) do
+    #
+  end
+
   defp get_tags(ast_node) do
     {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
 
