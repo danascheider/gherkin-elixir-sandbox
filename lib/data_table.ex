@@ -31,6 +31,14 @@ defmodule Gherkin.DataTable do
     rows
   end
 
+  def get_table_header(ast_node) do
+    get_table_rows(ast_node) |> List.first
+  end
+
+  def get_table_body(ast_node) do
+    get_table_rows(ast_node) |> Enum.slice(1, Enum.count(get_table_rows(ast_node)))
+  end
+
   defp raise_error_if_bad_cell_count(row, count) do
     if Map.get(row, :cells) |> Enum.count != count do
       loc = Map.get(row, :location)

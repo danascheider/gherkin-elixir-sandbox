@@ -76,4 +76,56 @@ defmodule GherkinDataTableTest do
 
     assert Gherkin.DataTable.get_table_rows(ast_node) == output
   end
+
+  test "get_table_header\\1 returns the first row" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :DataTable,
+      sub_items: [
+        {:TableRow, %Gherkin.Token{
+          matched_type: :TableRow, 
+          location: %{column: 1, line: 1},
+          matched_items: [%Gherkin.Token{matched_type: :TableCell, location: %{column: 1, line: 1}, matched_text: "foo"}]
+          }
+        },
+        {:TableRow, %Gherkin.Token{
+          matched_type: :TableRow,
+          location: %{column: 1, line: 1},
+          matched_items: [%Gherkin.Token{matched_type: :TableCell, location: %{column: 1, line: 1}, matched_text: "bar"}]
+          }
+        }
+      ]
+    }
+
+    assert Gherkin.DataTable.get_table_header(ast_node) == Gherkin.DataTable.get_table_rows(ast_node) |> List.first
+  end
+
+  test "get_table_body\\1 returns the table body" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :DataTable,
+      sub_items: [
+        {:TableRow, %Gherkin.Token{
+          matched_type: :TableRow, 
+          location: %{column: 1, line: 1},
+          matched_items: [%Gherkin.Token{matched_type: :TableCell, location: %{column: 1, line: 1}, matched_text: "foo"}]
+          }
+        },
+        {:TableRow, %Gherkin.Token{
+          matched_type: :TableRow,
+          location: %{column: 14, line: 1},
+          matched_items: [%Gherkin.Token{matched_type: :TableCell, location: %{column: 14, line: 1}, matched_text: "bar"}]
+          }
+        }
+      ]
+    }
+
+    output = [
+      %{
+        cells: [%{location: %{column: 14, line: 1}, type: :TableCell, value: "bar"}],
+        location: %{column: 14, line: 1},
+        type: :TableRow
+      }
+    ]
+
+    assert Gherkin.DataTable.get_table_body(ast_node) == output
+  end
 end
