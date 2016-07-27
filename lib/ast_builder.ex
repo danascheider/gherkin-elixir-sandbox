@@ -133,7 +133,35 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Feature}) do
-    #
+    h = Gherkin.AstNode.get_single(ast_node, :FeatureHeader)
+
+    if h do
+      {_, header} = h
+
+      l = Gherkin.AstNode.get_single(header, :FeatureLine)
+
+      if l do
+        {_, feature_line} = l
+
+        tags             = get_tags(header)
+        {_, background}  = Gherkin.AstNode.get_single(ast_node, :Background)
+        definitions      = Gherkin.AstNode.get_tokens(ast_node, :ScenarioDefinition) |> Enum.map(fn({_, item}) -> item end)
+        {_, description} = Gherkin.AstNode.get_single(header, :Description)
+        language         = feature_line.matched_gherkin_dialect
+        children         = List.flatten([background, definitions]) |> Enum.reject(fn(x) -> x == nil end)
+
+        %{
+          type: ast_node.rule_type,
+          tags: tags,
+          description: description,
+          location: feature_line.location,
+          language: feature_line.matched_gherkin_dialect,
+          keyword: feature_line.matched_keyword,
+          name: feature_line.matched_text,
+          children: children
+        }
+      end
+    end
   end
 
   defp get_tags(ast_node) do

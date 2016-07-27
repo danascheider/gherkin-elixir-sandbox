@@ -273,9 +273,55 @@ defmodule GherkinAstBuilderTest do
   test ".transform_node\\1 when rule type is :Feature and no feature line returns nil" do
     ast_node = %Gherkin.AstNode{
       rule_type: :Feature,
-      sub_items: [{:FeatureHeader, %Gherkin.Token{matched_type: :FeatureHeader}}]
+      sub_items: [{:FeatureHeader, %Gherkin.AstNode{rule_type: :FeatureHeader}}]
     }
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == nil
+  end
+
+  test ".transform_node\\1 when rule type is :Feature returns appropriate map" do
+    tag_node = %Gherkin.AstNode{
+      rule_type: :Tags,
+      sub_items: [
+        {:TagLine, %Gherkin.Token{matched_type: :TagLine, matched_items: [%Gherkin.Token{matched_type: :Tag, location: %{line: 1, column: 14}, matched_text: "Foo bar"}]}}
+      ]
+    }
+
+    ast_node = %Gherkin.AstNode{
+      rule_type: :Feature,
+      sub_items: [
+        {:FeatureHeader, %Gherkin.AstNode{
+            rule_type: :FeatureHeader,
+            sub_items: [
+              {:FeatureLine, %Gherkin.Token{matched_type: :FeatureLine, location: %{column: 1, line: 1}, matched_keyword: "* ", matched_text: "Foo bar"}},
+              {:Tags, tag_node},
+              {:Description, %Gherkin.Token{matched_type: :Description}},
+            ]
+          }
+        },
+        {:Background, %Gherkin.AstNode{rule_type: :Background}},
+        {:ScenarioDefinition, %Gherkin.AstNode{rule_type: :ScenarioDefinition}},
+        {:ScenarioDefinition, %Gherkin.AstNode{rule_type: :ScenarioDefinition}}
+      ]
+    }
+
+    tags = [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+
+    expected_output = %{
+      type: :Feature,
+      tags: tags,
+      location: %{column: 1, line: 1},
+      language: "en",
+      keyword: "* ",
+      name: "Foo bar",
+      description: %Gherkin.Token{matched_type: :Description},
+      children: [
+        %Gherkin.AstNode{rule_type: :Background},
+        %Gherkin.AstNode{rule_type: :ScenarioDefinition},
+        %Gherkin.AstNode{rule_type: :ScenarioDefinition}
+      ]
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 end
