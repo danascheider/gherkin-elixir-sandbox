@@ -118,6 +118,13 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ExamplesTable}) do
+    %{
+      table_header: Gherkin.DataTable.get_table_header(ast_node),
+      table_body: Gherkin.DataTable.get_table_body(ast_node)
+    }
+  end
+
   defp get_tags(ast_node) do
     {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
 
