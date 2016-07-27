@@ -8,6 +8,43 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.start_rule([], :FeatureHeader) == [ast_node]
   end
 
+  test ".end_rule\\2 adds the transformed node to the last node in the stack" do
+    stack = [
+      %Gherkin.AstNode{rule_type: :ExamplesTable},
+      %Gherkin.AstNode{rule_type: :Feature},
+      %Gherkin.AstNode{
+        rule_type: :ScenarioDefinition, 
+        sub_items: [
+          {:ScenarioOutline, %Gherkin.AstNode{
+            rule_type: :ScenarioOutline,
+            sub_items: [
+                {:ScenarioOutlineLine, %Gherkin.Token{matched_type: :ScenarioOutlineLine}}
+              ]
+            }
+          }
+        ]
+      }
+    ]
+
+    expected_output = %Gherkin.AstNode{
+                        rule_type: :Feature,
+                        sub_items: [
+                          %{
+                            description: nil, 
+                            examples: [], 
+                            keyword: "Feature",
+                            location: %{column: 1, line: 1}, 
+                            name: "", 
+                            steps: [], 
+                            tags: [],
+                            type: :ScenarioOutline
+                          }
+                        ]
+                      }
+
+    assert Gherkin.AstBuilder.end_rule(stack) == expected_output
+  end
+
   test ".current_node\\1 returns the last item in the stack" do
     stack = [%Gherkin.AstNode{rule_type: :Feature}, %Gherkin.AstNode{rule_type: :FeatureHeader}]
 

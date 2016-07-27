@@ -8,8 +8,10 @@ defmodule Gherkin.AstNode do
   end
 
   def get_single(node, key) do 
-    child = Map.get(node, :sub_items) |> List.keyfind(key, 0)
-    child
+    if tuple = Map.get(node, :sub_items) |> List.keyfind(key, 0) do
+      {_, child} = tuple
+      child
+    end
   end
 
   def get_token(node, key), do: get_single(node, key)

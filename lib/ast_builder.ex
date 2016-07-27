@@ -3,11 +3,18 @@ defmodule Gherkin.AstBuilder do
     Enum.concat(stack, [ %Gherkin.AstNode{rule_type: rule_type} ])
   end
 
+  def end_rule(stack) do
+    node_to_add = List.last(stack)
+    new_stack   = Enum.take(stack, Enum.count(stack) - 1)
+
+    current_node(new_stack) |> Gherkin.AstNode.add(transform_node(node_to_add))
+  end
+
   def current_node(stack), do: List.last(stack)
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step}) do
-    {_, step_line}  = Gherkin.AstNode.get_token(ast_node, :StepLine)
-    argument        = Gherkin.AstNode.get_token(ast_node, :DataTable) || Gherkin.AstNode.get_token(ast_node, :DocString) || nil
+    step_line  = Gherkin.AstNode.get_token(ast_node, :StepLine)
+    argument   = Gherkin.AstNode.get_token(ast_node, :DataTable) || Gherkin.AstNode.get_token(ast_node, :DocString) || nil
 
     %{
       type: ast_node.rule_type,
@@ -19,10 +26,10 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DocString}) do 
-    {_, separator_token} = Gherkin.AstNode.get_token(ast_node, :DocStringSeparator)
-    content_type         = separator_token.matched_text
-    line_tokens          = Gherkin.AstNode.get_tokens(ast_node, :Other)
-    content              = Enum.map(line_tokens, fn({:Other, t}) -> t.matched_text end) |> Enum.join("\n")
+    separator_token = Gherkin.AstNode.get_token(ast_node, :DocStringSeparator)
+    content_type    = separator_token.matched_text
+    line_tokens     = Gherkin.AstNode.get_tokens(ast_node, :Other)
+    content         = Enum.map(line_tokens, fn({:Other, t}) -> t.matched_text end) |> Enum.join("\n")
 
     %{
       type: ast_node.rule_type,
@@ -43,8 +50,8 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Background}) do
-    {_, background_line} = Gherkin.AstNode.get_token(ast_node, :BackgroundLine)
-    {_, description}     = Gherkin.AstNode.get_single(ast_node, :Description)
+    background_line = Gherkin.AstNode.get_token(ast_node, :BackgroundLine)
+    description     = Gherkin.AstNode.get_single(ast_node, :Description)
     steps                = Gherkin.AstNode.get_tokens(ast_node, :Step)
                              |> Enum.map(fn({_, step}) -> step end)
 
@@ -62,16 +69,16 @@ defmodule Gherkin.AstBuilder do
     tags = get_tags(ast_node)
 
     if Gherkin.AstNode.get_single(ast_node, :Scenario) == nil do
-      {_, scenario_outline_node} = Gherkin.AstNode.get_single(ast_node, :ScenarioOutline)
+      scenario_outline_node = Gherkin.AstNode.get_single(ast_node, :ScenarioOutline)
 
       if !scenario_outline_node, do: raise "Internal grammar error"
 
-      {_, scenario_outline_line} = Gherkin.AstNode.get_single(scenario_outline_node, :ScenarioOutlineLine)
-      {_, description}           = Gherkin.AstNode.get_single(scenario_outline_node, :Description)
-      steps                      = Gherkin.AstNode.get_tokens(scenario_outline_node, :Step)
-                                     |> Enum.map(fn({_, step}) -> step end)
-      examples                   = Gherkin.AstNode.get_tokens(scenario_outline_node, :ExamplesDefinition)
-                                     |> Enum.map(fn({_, step}) -> step end)
+      scenario_outline_line = Gherkin.AstNode.get_single(scenario_outline_node, :ScenarioOutlineLine)
+      description           = Gherkin.AstNode.get_single(scenario_outline_node, :Description)
+      steps                 = Gherkin.AstNode.get_tokens(scenario_outline_node, :Step)
+                                |> Enum.map(fn({_, step}) -> step end)
+      examples              = Gherkin.AstNode.get_tokens(scenario_outline_node, :ExamplesDefinition)
+                                |> Enum.map(fn({_, step}) -> step end)
 
       %{
         type: scenario_outline_node.rule_type,
@@ -84,11 +91,11 @@ defmodule Gherkin.AstBuilder do
         examples: examples
       }
     else
-      {_, scenario_node} = Gherkin.AstNode.get_single(ast_node, :Scenario)
-      {_, scenario_line} = Gherkin.AstNode.get_token(scenario_node, :ScenarioLine)
-      {_, description}   = Gherkin.AstNode.get_token(scenario_node, :Description)
-      steps              = Gherkin.AstNode.get_tokens(scenario_node, :Step)
-                             |> Enum.map(fn({_, step}) -> step end)
+      scenario_node = Gherkin.AstNode.get_single(ast_node, :Scenario)
+      scenario_line = Gherkin.AstNode.get_token(scenario_node, :ScenarioLine)
+      description   = Gherkin.AstNode.get_token(scenario_node, :Description)
+      steps         = Gherkin.AstNode.get_tokens(scenario_node, :Step)
+                       |> Enum.map(fn({_, step}) -> step end)
 
       %{
         type: ast_node.rule_type,
@@ -103,10 +110,10 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ExamplesDefinition}) do
-    {_, examples_node}  = Gherkin.AstNode.get_single(ast_node, :Examples)
-    {_, examples_line}  = Gherkin.AstNode.get_token(examples_node, :ExamplesLine)
-    {_, description}    = Gherkin.AstNode.get_token(examples_node, :Description)
-    {_, examples_table} = Gherkin.AstNode.get_single(examples_node, :ExamplesTable)
+    examples_node  = Gherkin.AstNode.get_single(ast_node, :Examples)
+    examples_line  = Gherkin.AstNode.get_token(examples_node, :ExamplesLine)
+    description    = Gherkin.AstNode.get_token(examples_node, :Description)
+    examples_table = Gherkin.AstNode.get_single(examples_node, :ExamplesTable)
 
     %{
       type: examples_node.rule_type,
@@ -135,22 +142,18 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Feature}) do
-    h = Gherkin.AstNode.get_single(ast_node, :FeatureHeader)
+   header = Gherkin.AstNode.get_single(ast_node, :FeatureHeader)
 
-    if h do
-      {_, header} = h
+    if header do
+      feature_line = Gherkin.AstNode.get_single(header, :FeatureLine)
 
-      l = Gherkin.AstNode.get_single(header, :FeatureLine)
-
-      if l do
-        {_, feature_line} = l
-
-        tags             = get_tags(header)
-        {_, background}  = Gherkin.AstNode.get_single(ast_node, :Background)
-        definitions      = Gherkin.AstNode.get_tokens(ast_node, :ScenarioDefinition) |> Enum.map(fn({_, item}) -> item end)
-        {_, description} = Gherkin.AstNode.get_single(header, :Description)
-        language         = feature_line.matched_gherkin_dialect
-        children         = List.flatten([background, definitions]) |> Enum.reject(fn(x) -> x == nil end)
+      if feature_line do
+        tags        = get_tags(header)
+        background  = Gherkin.AstNode.get_single(ast_node, :Background)
+        definitions = Gherkin.AstNode.get_tokens(ast_node, :ScenarioDefinition) |> Enum.map(fn({_, item}) -> item end)
+        description = Gherkin.AstNode.get_single(header, :Description)
+        language    = feature_line.matched_gherkin_dialect
+        children    = List.flatten([background, definitions]) |> Enum.reject(fn(x) -> x == nil end)
 
         %{
           type: ast_node.rule_type,
@@ -167,8 +170,8 @@ defmodule Gherkin.AstBuilder do
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :GherkinDocument}) do
-    {_, feature} = Gherkin.AstNode.get_single(ast_node, :Feature)
-    comments     = Gherkin.AstNode.get_tokens(ast_node, :Comment) |> Enum.map(fn({_, item}) -> item end)
+    feature  = Gherkin.AstNode.get_single(ast_node, :Feature)
+    comments = Gherkin.AstNode.get_tokens(ast_node, :Comment) |> Enum.map(fn({_, item}) -> item end)
 
     %{
       type: ast_node.rule_type,
@@ -178,7 +181,7 @@ defmodule Gherkin.AstBuilder do
   end
 
   defp get_tags(ast_node) do
-    {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
+    tags_node = Gherkin.AstNode.get_single(ast_node, :Tags)
 
     if tags_node == nil do
       []

@@ -17,7 +17,7 @@ defmodule GherkinAstNodeTest do
     ]
     node      = %Gherkin.AstNode{sub_items: sub_items, rule_type: :FeatureHeader}
 
-    assert Gherkin.AstNode.get_single(node, :ScenarioHeader) == {:ScenarioHeader, %Gherkin.Token{matched_type: :ScenarioHeader, matched_keyword: "Scenario"}}
+    assert Gherkin.AstNode.get_single(node, :ScenarioHeader) == %Gherkin.Token{matched_type: :ScenarioHeader, matched_keyword: "Scenario"}
   end
 
   test ".get_items returns all matching children" do 
