@@ -3,6 +3,8 @@ defmodule Gherkin.AstBuilder do
     Enum.concat(stack, [ %Gherkin.AstNode{rule_type: rule_type} ])
   end
 
+  def current_node(stack), do: List.last(stack)
+
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step}) do
     {_, step_line}  = Gherkin.AstNode.get_token(ast_node, :StepLine)
     argument        = Gherkin.AstNode.get_token(ast_node, :DataTable) || Gherkin.AstNode.get_token(ast_node, :DocString) || nil

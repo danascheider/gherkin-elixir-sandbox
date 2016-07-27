@@ -2,10 +2,16 @@ defmodule GherkinAstBuilderTest do
   use ExUnit.Case
   doctest Gherkin.AstBuilder 
 
-  test ".start_rule returns an AST node" do 
+  test ".start_rule\\2 returns an AST node" do 
     ast_node = %Gherkin.AstNode{rule_type: :FeatureHeader, sub_items: []}
 
     assert Gherkin.AstBuilder.start_rule([], :FeatureHeader) == [ast_node]
+  end
+
+  test ".current_node\\1 returns the last item in the stack" do
+    stack = [%Gherkin.AstNode{rule_type: :Feature}, %Gherkin.AstNode{rule_type: :FeatureHeader}]
+
+    assert Gherkin.AstBuilder.current_node(stack) == %Gherkin.AstNode{rule_type: :FeatureHeader}
   end
 
   test ".transform_node when rule type is :Step returns appropriate map" do 
