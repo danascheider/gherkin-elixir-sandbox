@@ -100,6 +100,24 @@ defmodule Gherkin.AstBuilder do
     end
   end
 
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :ExamplesDefinition}) do
+    {_, examples_node}  = Gherkin.AstNode.get_single(ast_node, :Examples)
+    {_, examples_line}  = Gherkin.AstNode.get_token(examples_node, :ExamplesLine)
+    {_, description}    = Gherkin.AstNode.get_token(examples_node, :Description)
+    {_, examples_table} = Gherkin.AstNode.get_single(examples_node, :ExamplesTable)
+
+    %{
+      type: examples_node.rule_type,
+      tags: get_tags(examples_node),
+      description: description,
+      keyword: examples_line.matched_keyword,
+      location: examples_line.location,
+      name: examples_line.matched_text,
+      table_body: Gherkin.DataTable.get_table_body(examples_table),
+      table_header: Gherkin.DataTable.get_table_header(examples_table)
+    }
+  end
+
   defp get_tags(ast_node) do
     {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
 

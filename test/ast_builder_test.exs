@@ -181,4 +181,53 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
+
+  test ".transform_node\\1 when rule type is :ExamplesDefinition returns the correct map" do
+    tag_node = %Gherkin.AstNode{
+      rule_type: :Tags,
+      sub_items: [
+        {:TagLine, %Gherkin.Token{matched_type: :TagLine, matched_items: [%Gherkin.Token{matched_type: :Tag, location: %{line: 1, column: 14}, matched_text: "Foo bar"}]}}
+      ]
+    }
+
+    table    = %Gherkin.AstNode{
+      rule_type: :ExamplesTable,
+      sub_items: [
+        {:TableRow, %Gherkin.Token{matched_type: :TableRow, matched_items: [%Gherkin.Token{matched_type: :TableCell}]}},
+        {:TableRow, %Gherkin.Token{matched_type: :TableRow, matched_items: [%Gherkin.Token{matched_type: :TableCell}]}},
+        {:TableRow, %Gherkin.Token{matched_type: :TableRow, matched_items: [%Gherkin.Token{matched_type: :TableCell}]}}
+      ]
+    }
+
+    ast_node     = %Gherkin.AstNode{
+      rule_type: :ExamplesDefinition,
+      sub_items: [
+        {:Examples, %Gherkin.AstNode{
+          rule_type: :Examples, 
+          sub_items: [
+              {:Tags, tag_node},
+              {:ExamplesLine, %Gherkin.Token{matched_type: :ExamplesLine, location: %{line: 13, column: 41}, matched_keyword: "* ", matched_text: "Foo"}},
+              {:Description, %Gherkin.Token{matched_type: :Description}},
+              {:ExamplesTable, table}
+            ]
+          }
+        }
+      ]
+    }
+
+    tags = [%{type: :Tag, location: %{line: 1, column: 14}, name: "Foo bar"}]
+
+    expected_output = %{
+      type: :Examples,
+      tags: tags,
+      location: %{line: 13, column: 41},
+      keyword: "* ",
+      name: "Foo",
+      description: %Gherkin.Token{matched_type: :Description},
+      table_header: Gherkin.DataTable.get_table_header(table),
+      table_body: Gherkin.DataTable.get_table_body(table)
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
 end
