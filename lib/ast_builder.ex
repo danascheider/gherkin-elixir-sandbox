@@ -125,6 +125,13 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Description}) do
+    Gherkin.AstNode.get_tokens(ast_node, :Other)
+      |> Enum.map(fn({_, token}) -> token.line.text end)
+      |> Enum.join("\n")
+      |> String.trim
+  end
+
   defp get_tags(ast_node) do
     {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
 
