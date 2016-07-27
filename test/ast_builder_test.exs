@@ -324,4 +324,22 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
+
+  test ".transform_node\\1 when rule type is :GherkinDocument returns appropriate map" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :GherkinDocument,
+      sub_items: [
+        {:Feature, %Gherkin.AstNode{rule_type: :Feature}},
+        {:Comment, %Gherkin.Token{matched_type: :Comment, location: %{column: 1, line: 3}, matched_text: "This is a comment"}}
+      ]
+    }
+
+    expected_output = %{
+      type: :GherkinDocument,
+      feature: %Gherkin.AstNode{rule_type: :Feature},
+      comments: [%Gherkin.Token{matched_type: :Comment, location: %{column: 1, line: 3}, matched_text: "This is a comment"}]
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
 end

@@ -164,6 +164,17 @@ defmodule Gherkin.AstBuilder do
     end
   end
 
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :GherkinDocument}) do
+    {_, feature} = Gherkin.AstNode.get_single(ast_node, :Feature)
+    comments     = Gherkin.AstNode.get_tokens(ast_node, :Comment) |> Enum.map(fn({_, item}) -> item end)
+
+    %{
+      type: ast_node.rule_type,
+      feature: feature,
+      comments: comments
+    }
+  end
+
   defp get_tags(ast_node) do
     {_, tags_node} = Gherkin.AstNode.get_single(ast_node, :Tags)
 
