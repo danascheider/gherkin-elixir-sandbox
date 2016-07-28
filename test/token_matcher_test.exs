@@ -1,3 +1,5 @@
+ExUnit.configure exclude: :pending, trace: true
+
 defmodule GherkinTokenMatcherTest do 
   use ExUnit.Case
   doctest Gherkin.TokenMatcher
@@ -6,6 +8,13 @@ defmodule GherkinTokenMatcherTest do
     token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
 
     assert Gherkin.TokenMatcher.match_tag_line(token) == false
+  end
+
+  @tag :pending
+  test ".match_tag_line\\1 when the line matches updates the matched items" do
+    token = %Gherkin.Token{
+      line: %Gherkin.GherkinLine{text: "@foo @bar @baz"}
+    }
   end
 
   test ".match_title_line\\3 when the line doesn't match returns false" do
