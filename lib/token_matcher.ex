@@ -39,6 +39,18 @@ defmodule Gherkin.TokenMatcher do
     match_title_line(token, :ExamplesLine, examples_keywords)
   end
 
+  def match_table_row(token) do
+    if Gherkin.GherkinLine.starts_with?(token.line, "|") do
+      %{
+        token |
+        matched_type: :TableRow,
+        matched_items: Gherkin.DataTable.get_cells(token)
+      }
+    else
+      false
+    end
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)

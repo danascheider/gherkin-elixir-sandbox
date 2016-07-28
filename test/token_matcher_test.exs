@@ -31,7 +31,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_feature_line(token) == false
   end
 
-  test ".match_feature_line\\2 returns true when the line matches" do
+  test ".match_feature_line\\2 updates the token when the line matches" do
     type     = :FeatureLine
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Feature: Hello world"}}
 
@@ -45,7 +45,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_feature_line(token) == expected_output
   end
 
-  test ".match_feature_line\\2 returns true when the line matches in another language" do
+  test ".match_feature_line\\2 updates the token when the line matches in another language" do
     language = "it"
     type     = :FeatureLine
     token    = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: language, line: %Gherkin.GherkinLine{text: "Funzionalità: Buon giorno mondo"}}
@@ -61,14 +61,14 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_feature_line(token, language) == expected_output
   end
 
-  test ".match_scenario_line\\2 returns false when the token doesn't match" do
+  test ".match_scenario_line\\2 updates the token when the token doesn't match" do
     type  = :ScenarioLine
     token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
 
     assert Gherkin.TokenMatcher.match_scenario_line(token) == false
   end
 
-  test ".match_scenario_line\\2 returns true when the token matches" do
+  test ".match_scenario_line\\2 updates the token when the token matches" do
     type  = :ScenarioLine
     token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Scenario: Hello world"}}
 
@@ -82,7 +82,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_scenario_line(token) == expected_output
   end
 
-  test ".match_scenario_line\\2 returns true when the token matches in another language" do
+  test ".match_scenario_line\\2 updates the token when the token matches in another language" do
     lang  = "es"
     type  = :ScenarioLine
     token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Escenario: Hola mundo"}}
@@ -155,7 +155,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_background_line(token) == expected_output
   end
 
-  test ".match_background_line\\2 returns true when the token matches in another language" do
+  test ".match_background_line\\2 updates the token when the token matches in another language" do
     lang  = "it"
     type  = :BackgroundLine
     token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Contesto:"}}
@@ -178,7 +178,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_examples_line(token) == false
   end
 
-  test ".match_examples_line\\2 returns true when the token matches" do
+  test ".match_examples_line\\2 updates the token when the token matches" do
     type  = :ExamplesLine
     token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Examples:"}}
 
@@ -192,7 +192,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_examples_line(token) == expected_output
   end
 
-  test ".match_examples_line\\2 returns true when the token matches in another language" do
+  test ".match_examples_line\\2 updates the token when the token matches in another language" do
     lang  = "it"
     type  = :ExamplesLine
     token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Esempi:"}}
@@ -208,7 +208,42 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_examples_line(token, lang) == expected_output
   end
 
+  test ".match_table_row\\1 returns false when the line doesn't match" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "Foo"}}
 
+    assert Gherkin.TokenMatcher.match_table_row(token) == false
+  end
+
+  test ".match_table_row\\1 updates the token when the line matches" do
+    token = %Gherkin.Token{
+      line: %Gherkin.GherkinLine{
+        text: "| Foo | Bar |"
+      },
+      location: %{column: 5, line: 13},
+      matched_items: [
+        %Gherkin.Token{
+          matched_type: :TableCell,
+          matched_text: "Foo",
+          location: %{column: 7, line: 13}
+        },
+        %Gherkin.Token{
+          matched_type: :TableCell,
+          matched_text: "Bar",
+          location: %{column: 13, line: 13}
+        }
+      ]
+    }
+
+    expected_output = %{token |
+      matched_type: :TableRow,
+      matched_items: [
+        %{type: :TableCell, location: %{column: 7, line: 13}, value: "Foo"},
+        %{type: :TableCell, location: %{column: 13, line: 13}, value: "Bar"}
+      ]
+    }
+
+    assert Gherkin.TokenMatcher.match_table_row(token) == expected_output
+  end
 
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
