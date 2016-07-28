@@ -134,6 +134,44 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_scenario_outline_line(token, lang) == expected_output
   end
 
+  test ".match_background_line\\2 returns false when the token doesn't match" do
+    type  = :BackgroundLine
+    token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo: bar baz"}}
+
+    assert Gherkin.TokenMatcher.match_background_line(token) == false
+  end
+
+  test ".match_background_line\\2 updates the token when the token matches" do
+    type  = :BackgroundLine
+    token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Background:"}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      line: %Gherkin.GherkinLine{text: "Background:"},
+      matched_text: "",
+      matched_keyword: "Background"
+    }
+
+    assert Gherkin.TokenMatcher.match_background_line(token) == expected_output
+  end
+
+  test ".match_background_line\\2 returns true when the token matches in another language" do
+    lang  = "it"
+    type  = :ScenarioLine
+    token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Contesto"}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      line: %Gherkin.GherkinLine{text: "Contesto:"},
+      matched_text: "",
+      matched_keyword: "Contesto",
+      matched_gherkin_dialect: lang
+    }
+
+    assert Gherkin.TokenMatcher.match_background_line(token, lang) == expected_output
+  end
+
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
