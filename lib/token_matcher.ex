@@ -15,6 +15,12 @@ defmodule Gherkin.TokenMatcher do
     match_title_line(token, :FeatureLine, feature_keywords)
   end
 
+  def match_scenario_line(token, language \\ "en") do
+    scenario_keywords = Gherkin.Dialect.scenario_keywords(language)
+
+    match_title_line(token, :ScenarioLine, scenario_keywords)
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)
