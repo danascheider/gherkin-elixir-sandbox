@@ -51,6 +51,18 @@ defmodule Gherkin.TokenMatcher do
     end
   end
 
+  def match_empty(token) do
+    if Gherkin.GherkinLine.empty?(token.line) do
+      %{
+        token |
+        matched_type: :Empty,
+        matched_indent: 0
+      }
+    else
+      false
+    end
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)

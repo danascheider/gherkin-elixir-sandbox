@@ -245,6 +245,26 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_table_row(token) == expected_output
   end
 
+  test ".match_empty\\1 returns false when the line is not empty" do
+    token = %Gherkin.Token{matched_type: :Empty, line: %Gherkin.GherkinLine{text: "Foo"}}
+
+    assert Gherkin.TokenMatcher.match_empty(token) == false
+  end
+
+  test ".match_empty\\1 updates the token when the line is empty" do
+    token = %Gherkin.Token{
+      line: %Gherkin.GherkinLine{text: "  "}
+    }
+
+    expected_output = %{
+      token |
+      matched_type: :Empty,
+      matched_indent: 0
+    }
+
+    assert Gherkin.TokenMatcher.match_empty(token) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
