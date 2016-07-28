@@ -63,6 +63,21 @@ defmodule Gherkin.TokenMatcher do
     end
   end
 
+  def match_comment(token) do
+    if Gherkin.GherkinLine.starts_with?(token.line, "#") do
+      text = Gherkin.GherkinLine.get_line_text(token.line, 0)
+
+      %{
+        token |
+        matched_type: :Comment,
+        matched_text: text,
+        matched_indent: 0
+      }
+    else
+      false
+    end
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)

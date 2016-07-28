@@ -265,6 +265,25 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_empty(token) == expected_output
   end
 
+  test ".match_comment\\1 returns false when the line is not a comment" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "    Given I am a user"}}
+
+    assert Gherkin.TokenMatcher.match_comment(token) == false
+  end
+
+  test ".match_comment\\1 updates the token when the line is a comment" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "    # This is a comment"}}
+
+    expected_output = %{
+      token |
+      matched_text: "    # This is a comment",
+      matched_type: :Comment,
+      matched_indent: 0
+    }
+
+    assert Gherkin.TokenMatcher.match_comment(token) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
