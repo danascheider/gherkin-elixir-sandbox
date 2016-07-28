@@ -284,6 +284,24 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_comment(token) == expected_output
   end
 
+  test ".match_language\\1 returns false when the token isn't a language header" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "   # This is a comment"}}
+
+    assert Gherkin.TokenMatcher.match_language(token) == false
+  end
+
+  test ".match_language\\1 updates the token when the token is a language header" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "# language: ja"}}
+
+    expected_output = %{
+      token |
+      matched_type: :Language,
+      matched_text: "ja"
+    }
+
+    assert Gherkin.TokenMatcher.match_language(token) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}

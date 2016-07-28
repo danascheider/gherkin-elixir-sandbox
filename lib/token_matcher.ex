@@ -1,5 +1,5 @@
 defmodule Gherkin.TokenMatcher do 
-  @language_pattern ~r/^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*$/
+  @language_pattern ~r/^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*\z/
 
   def match_tag_line(token) do
     if Gherkin.GherkinLine.starts_with?(token.line, "@") do
@@ -72,6 +72,18 @@ defmodule Gherkin.TokenMatcher do
         matched_type: :Comment,
         matched_text: text,
         matched_indent: 0
+      }
+    else
+      false
+    end
+  end
+
+  def match_language(token) do
+    if Regex.match?(@language_pattern, token.line.text) do
+      %{
+        token |
+        matched_type: :Language,
+        matched_text: Regex.run(@language_pattern, token.line.text) |> List.last
       }
     else
       false
