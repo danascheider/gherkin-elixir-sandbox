@@ -98,6 +98,42 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_scenario_line(token, lang) == expected_output
   end
 
+  test ".match_scenario_outline_line\\2 returns false when the line doesn't match" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "Foo: bar baz"}}
+
+    assert Gherkin.TokenMatcher.match_scenario_outline_line(token) == false
+  end
+
+  test ".match_scenario_outline_line\\2 updates the token when the line matches" do
+    type = :ScenarioOutlineLine
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "Scenario Outline:"}}
+
+    expected_output = %Gherkin.Token{
+      line: %Gherkin.GherkinLine{text: "Scenario Outline:"},
+      matched_type: type,
+      matched_text: "",
+      matched_keyword: "Scenario Outline"
+    }
+
+    assert Gherkin.TokenMatcher.match_scenario_outline_line(token) == expected_output
+  end
+
+  test ".match_scenario_outline_line\\2 updates the token when the token matches in another language" do
+    lang  = "it"
+    type  = :ScenarioOutlineLine
+    token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Schema dello scenario:"}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      line: %Gherkin.GherkinLine{text: "Schema dello scenario:"},
+      matched_text: "",
+      matched_keyword: "Schema dello scenario",
+      matched_gherkin_dialect: lang
+    }
+
+    assert Gherkin.TokenMatcher.match_scenario_outline_line(token, lang) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
