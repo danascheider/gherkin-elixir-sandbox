@@ -157,8 +157,8 @@ defmodule GherkinTokenMatcherTest do
 
   test ".match_background_line\\2 returns true when the token matches in another language" do
     lang  = "it"
-    type  = :ScenarioLine
-    token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Contesto"}}
+    type  = :BackgroundLine
+    token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Contesto:"}}
 
     expected_output = %Gherkin.Token{
       matched_type: type,
@@ -170,6 +170,44 @@ defmodule GherkinTokenMatcherTest do
 
     assert Gherkin.TokenMatcher.match_background_line(token, lang) == expected_output
   end
+
+  test ".match_examples_line\\2 returns false when the token doesn't match" do
+    type  = :ExamplesLine
+    token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo: bar baz"}}
+
+    assert Gherkin.TokenMatcher.match_examples_line(token) == false
+  end
+
+  test ".match_examples_line\\2 returns true when the token matches" do
+    type  = :ExamplesLine
+    token = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Examples:"}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      line: %Gherkin.GherkinLine{text: "Examples:"},
+      matched_text: "",
+      matched_keyword: "Examples"
+    }
+
+    assert Gherkin.TokenMatcher.match_examples_line(token) == expected_output
+  end
+
+  test ".match_examples_line\\2 returns true when the token matches in another language" do
+    lang  = "it"
+    type  = :ExamplesLine
+    token = %Gherkin.Token{matched_type: type, matched_gherkin_dialect: lang, line: %Gherkin.GherkinLine{text: "Esempi:"}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      line: %Gherkin.GherkinLine{text: "Esempi:"},
+      matched_text: "",
+      matched_keyword: "Esempi",
+      matched_gherkin_dialect: lang
+    }
+
+    assert Gherkin.TokenMatcher.match_examples_line(token, lang) == expected_output
+  end
+
 
 
   test ".match_title_line\\3 when the line doesn't match returns false" do

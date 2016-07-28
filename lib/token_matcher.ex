@@ -33,6 +33,12 @@ defmodule Gherkin.TokenMatcher do
     match_title_line(token, :BackgroundLine, background_keywords)
   end
 
+  def match_examples_line(token, language \\ "en") do
+    examples_keywords = Gherkin.Dialect.examples_keywords(language)
+
+    match_title_line(token, :ExamplesLine, examples_keywords)
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)
