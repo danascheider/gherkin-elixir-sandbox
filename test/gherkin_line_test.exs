@@ -38,43 +38,43 @@ defmodule GherkinLineTest do
     assert Gherkin.GherkinLine.starts_with_title_keyword?(line, "Scenario") == false
   end
 
-  test ".get_rest_trimmed returns stripped string" do 
+  test ".get_rest_trimmed\\2 returns stripped string" do 
     line = %Gherkin.GherkinLine{text: "  Scenario: Foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.get_rest_trimmed(line, 9) == "Foo bar"
   end
 
-  test ".get_rest_trimmed shortens string the prescribed amount" do 
+  test ".get_rest_trimmed\\2 shortens string the prescribed amount" do 
     line = %Gherkin.GherkinLine{text: "  Scenario: Foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.get_rest_trimmed(line, 2) == "enario: Foo bar"
   end
 
-  test ".empty? returns true when empty" do 
+  test ".empty?\\1 returns true when empty" do 
     line = %Gherkin.GherkinLine{text: "  \n", line_number: 3}
 
     assert Gherkin.GherkinLine.empty?(line) == true
   end
 
-  test ".empty? returns false when not empty" do 
+  test ".empty?\\1 returns false when not empty" do 
     line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.empty?(line) == false
   end
 
-  test ".get_line_text returns the string when the indent is less than 0" do 
+  test ".get_line_text\\2 returns the string when the indent is less than 0" do 
     line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.get_line_text(line, -3) == line.text
   end
 
-  test ".get_line_text returns the string when the indent is greater than the length" do
+  test ".get_line_text\\2 returns the string when the indent is greater than the length" do
     line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.get_line_text(line, 100) == line.text
   end
 
-  test ".get_line_text returns the trimmed string" do 
+  test ".get_line_text\\2 returns the trimmed string" do 
     line = %Gherkin.GherkinLine{text: "  Scenario foo bar\n", line_number: 3}
 
     assert Gherkin.GherkinLine.get_line_text(line, 1) == " Scenario foo bar\n"
