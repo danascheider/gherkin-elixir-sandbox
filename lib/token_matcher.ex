@@ -2,7 +2,11 @@ defmodule Gherkin.TokenMatcher do
   @language_pattern ~r/^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*$/
 
   def match_tag_line(token) do
-    Gherkin.GherkinLine.starts_with?(token.line, "@")
+    if Gherkin.GherkinLine.starts_with?(token.line, "@") do
+      %{token | matched_type: :TagLine, matched_items: Gherkin.Tag.get_tags(token.line) }
+    else
+      false
+    end
   end
 
   def match_title_line(token, token_type, keywords) do

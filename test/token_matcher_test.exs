@@ -10,11 +10,18 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tag_line(token) == false
   end
 
-  @tag :pending
   test ".match_tag_line\\1 when the line matches updates the matched items" do
     token = %Gherkin.Token{
       line: %Gherkin.GherkinLine{text: "@foo @bar @baz"}
     }
+
+    expected_output = %Gherkin.Token{
+      line: %Gherkin.GherkinLine{text: "@foo @bar @baz"},
+      matched_type: :TagLine,
+      matched_items: Gherkin.Tag.get_tags(token.line)
+    }
+
+    assert Gherkin.TokenMatcher.match_tag_line(token) == expected_output
   end
 
   test ".match_title_line\\3 when the line doesn't match returns false" do
