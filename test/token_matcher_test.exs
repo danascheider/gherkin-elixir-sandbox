@@ -15,4 +15,16 @@ defmodule GherkinTokenMatcherTest do
 
     assert Gherkin.TokenMatcher.match_title_line(token, type, keywords) == false
   end
+
+  test ".match_title_line\\3 when the line matches updates the token" do
+    type     = :Step
+    token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
+    keywords = ["Foo"]
+
+    expected_output = %Gherkin.Token{
+      matched_type: type,
+      matched_keyword: "Foo",
+      matched_text: "bar baz"
+    }
+  end
 end

@@ -11,7 +11,14 @@ defmodule Gherkin.TokenMatcher do
     end)
 
     if keyword do
-      true
+      title = Gherkin.GherkinLine.get_rest_trimmed(token.line, String.length(keyword) + 1)
+
+      %{
+        token |
+        matched_type: token_type,
+        matched_text: title,
+        matched_keyword: keyword
+      }
     else
       false
     end
