@@ -138,6 +138,30 @@ defmodule Gherkin.TokenMatcher do
     }
   end
 
+  def match_step_line(token, language \\ "en") do
+    keywords = Gherkin.Dialect.given_keywords(language) ++
+               Gherkin.Dialect.when_keywords(language) ++
+               Gherkin.Dialect.then_keywords(language) ++
+               Gherkin.Dialect.and_keywords(language) ++
+               Gherkin.Dialect.but_keywords(language)
+
+    keyword  = Enum.find(keywords, fn(k) -> 
+      Gherkin.GherkinLine.starts_with?(token.line, k)
+    end)
+
+    if keyword do
+      %{
+        token |
+        matched_type: :StepLine,
+        matched_keyword: keyword,
+        matched_text: Gherkin.GherkinLine.get_rest_trimmed(token.line, String.length(keyword)),
+        matched_gherkin_dialect: language
+      }
+    else
+      false
+    end
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)

@@ -377,6 +377,32 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_other(token) == expected_output
   end
 
+  test ".match_step_line\\2 returns false if no keyword matches" do
+    token = %Gherkin.Token{
+      matched_type: :StepLine,
+      line: %Gherkin.GherkinLine{text: "No keywords here"}
+    }
+
+    assert Gherkin.TokenMatcher.match_step_line(token) == false
+  end
+
+  test ".match_step_line\\2 updates the token if a keyword matches" do
+    token = %Gherkin.Token{
+      matched_type: :FeatureHeader,
+      line: %Gherkin.GherkinLine{text: "Quando clicco su 'Login'"}
+    }
+
+    expected_output = %{
+      token |
+      matched_type: :StepLine,
+      matched_keyword: "Quando ",
+      matched_text: "clicco su 'Login'",
+      matched_gherkin_dialect: "it"
+    }
+
+    assert Gherkin.TokenMatcher.match_step_line(token, "it") == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
