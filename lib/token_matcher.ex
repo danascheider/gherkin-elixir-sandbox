@@ -1,4 +1,10 @@
 defmodule Gherkin.TokenMatcher do 
+  defstruct dialect_name: "en", 
+            dialect: Gherkin.Dialect.for("en"), 
+            default_dialect_name: "en",
+            active_docstring_separator: nil,
+            indent_to_remove: 0
+
   @language_pattern ~r/^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*\z/
 
   def match_tag_line(token) do
