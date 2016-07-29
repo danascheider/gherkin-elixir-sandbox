@@ -33,7 +33,8 @@ defmodule Gherkin.Mixfile do
   defp deps do
     [
       {:json, "~> 0.3.0"},
-      {:observer_cli, "~> 1.0.7"}
+      {:observer_cli, "~> 1.0.7"},
+      {:mock, "~>0.1.1", only: :test}
     ]
   end
 
