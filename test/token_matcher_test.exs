@@ -1,5 +1,3 @@
-ExUnit.configure exclude: :pending, trace: true
-
 defmodule GherkinTokenMatcherTest do 
   use ExUnit.Case
   doctest Gherkin.TokenMatcher
