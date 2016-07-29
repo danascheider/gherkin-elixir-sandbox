@@ -349,6 +349,20 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_doc_string_separator(token, "\"\"\"") == expected_output
   end
 
+  test ".match_eof\\1 returns false when the token is not an EOF" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{}}
+
+    assert Gherkin.TokenMatcher.match_eof(token) == false
+  end
+
+  test ".match_eof\\1 updates the token when the token is an EOF" do
+    token = %Gherkin.Token{matched_type: :Feature}
+
+    expected_output = %Gherkin.Token{matched_type: :EOF}
+
+    assert Gherkin.TokenMatcher.match_eof(token) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
