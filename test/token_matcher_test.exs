@@ -302,6 +302,53 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_language(token) == expected_output
   end
 
+  test ".match_doc_string_separator\\2 returns true when anything matches" do
+    token1 = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "\"\"\""}}
+    token2 = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "```"}}
+
+    expected_output1 = %{
+      token1 | 
+      matched_text: "\"\"\"",
+      matched_type: :DocStringSeparator
+    }
+
+    expected_output2 = %{
+      token2 |
+      matched_text: "```",
+      matched_type: :DocStringSeparator
+    }
+
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token1) == expected_output1
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token2) == expected_output2
+  end
+
+  test ".match_doc_string_separator\\2 returns false when the line is not a docstring separator" do
+    token = %Gherkin.Token{matched_type: :DocStringSeparator, line: %Gherkin.GherkinLine{text: "foo"}}
+
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token, "\"\"\"") == false
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token, "```") == false
+  end
+
+  test ".match_doc_string_separator\\2 returns false when the line is the wrong docstring separator" do
+    token1 = %Gherkin.Token{matched_type: :DocStringSeparator, line: %Gherkin.GherkinLine{text: "\"\"\""}}
+    token2 = %Gherkin.Token{matched_type: :DocStringSeparator, line: %Gherkin.GherkinLine{text: "```"}}
+
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token1, "```") == false
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token2, "\"\"\"") == false
+  end
+
+  test ".match_doc_string_separator\\2 updates the token when the line matches" do
+    token = %Gherkin.Token{line: %Gherkin.GherkinLine{text: "    \"\"\""}}
+
+    expected_output = %Gherkin.Token{
+      matched_type: :DocStringSeparator,
+      matched_text: "\"\"\"",
+      line: %Gherkin.GherkinLine{text: "    \"\"\""}
+    }
+
+    assert Gherkin.TokenMatcher.match_doc_string_separator(token, "\"\"\"") == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}

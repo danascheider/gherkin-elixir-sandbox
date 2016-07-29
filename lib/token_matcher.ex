@@ -90,6 +90,34 @@ defmodule Gherkin.TokenMatcher do
     end
   end
 
+  def match_doc_string_separator(token) do
+    match_doc_string_separator(token, "\"\"\"") || match_doc_string_separator(token, "```")
+  end
+
+  def match_doc_string_separator(token, "\"\"\"") do
+    if Gherkin.GherkinLine.trimmed_text(token.line) == "\"\"\"" do
+      %{
+        token |
+        matched_type: :DocStringSeparator,
+        matched_text: "\"\"\""
+      }
+    else
+      false
+    end
+  end
+
+  def match_doc_string_separator(token, "```") do
+    if Gherkin.GherkinLine.trimmed_text(token.line) == "```" do
+      %{
+        token |
+        matched_type: :DocStringSeparator,
+        matched_text: "```"
+      }
+    else
+      false
+    end
+  end
+
   def match_title_line(token, token_type, keywords) do
     keyword = Enum.find(keywords, fn(keyword) -> 
       Gherkin.GherkinLine.starts_with_title_keyword?(token.line, keyword)
