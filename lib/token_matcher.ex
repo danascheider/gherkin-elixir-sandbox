@@ -94,15 +94,6 @@ defmodule Gherkin.TokenMatcher do
     match_doc_string_separator(token, "\"\"\"") || match_doc_string_separator(token, "```")
   end
 
-  def match_eof(token = %Gherkin.Token{line: nil}) do
-    %{
-      token |
-      matched_type: :EOF
-    }
-  end
-
-  def match_eof(%Gherkin.Token{}), do: false
-
   def match_doc_string_separator(token, "\"\"\"") do
     if Gherkin.GherkinLine.trimmed_text(token.line) == "\"\"\"" do
       %{
@@ -125,6 +116,26 @@ defmodule Gherkin.TokenMatcher do
     else
       false
     end
+  end
+
+  def match_eof(token = %Gherkin.Token{line: nil}) do
+    %{
+      token |
+      matched_type: :EOF
+    }
+  end
+
+  def match_eof(%Gherkin.Token{}), do: false
+
+
+  def match_other(token) do
+    %{
+      token |
+      matched_type: :Other,
+      matched_text: Gherkin.GherkinLine.get_line_text(token.line, 0),
+      matched_keyword: nil,
+      matched_indent: 0
+    }
   end
 
   def match_title_line(token, token_type, keywords) do

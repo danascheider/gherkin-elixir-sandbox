@@ -363,6 +363,20 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_eof(token) == expected_output
   end
 
+  test ".match_other\\1 updates the token" do
+    token = %Gherkin.Token{matched_type: :ScenarioLine, line: %Gherkin.GherkinLine{text: "Foobar"}}
+
+    expected_output = %{
+      token |
+      matched_type: :Other,
+      matched_text: "Foobar",
+      matched_keyword: nil,
+      matched_indent: 0
+    }
+
+    assert Gherkin.TokenMatcher.match_other(token) == expected_output
+  end
+
   test ".match_title_line\\3 when the line doesn't match returns false" do
     type     = :Step
     token    = %Gherkin.Token{matched_type: type, line: %Gherkin.GherkinLine{text: "Foo bar baz"}}
