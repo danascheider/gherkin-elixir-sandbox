@@ -1,7 +1,7 @@
 defmodule Gherkin.TokenMatcher do
   def match_tokens(list, language \\ "en")
 
-  def match_tokens([], language) do
+  def match_tokens([], _language) do
     []
   end
 
@@ -10,8 +10,6 @@ defmodule Gherkin.TokenMatcher do
 
     [ match_token(head, dialect) ] ++ match_tokens(tail, dialect)
   end
-
-  defp match_token(raw_token, language \\ "en")
 
   defp match_token(%Gherkin.RawToken{line: %Gherkin.Line{text: nil, line_number: num}, location: _}, language) do
     %Gherkin.Token{
@@ -52,6 +50,18 @@ defmodule Gherkin.TokenMatcher do
           matched_indent: 0,
           matched_gherkin_dialect: language,
           location: %{line: raw_token.line.line_number, column: 1}
+        }
+
+      Gherkin.Line.is_feature_header?(raw_token.line) ->
+        keyword = Gherkin.Dialect.feature_keywords(language) 
+                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+
+        %Gherkin.Token{
+          matched_type: :FeatureLine,
+          matched_indent: Gherkin.Line.indent(raw_token.line),
+          matched_gherkin_dialect: language,
+          matched_keyword: keyword,
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}: ", "")
         }
     end
   end

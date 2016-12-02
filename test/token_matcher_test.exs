@@ -99,6 +99,8 @@ defmodule GherkinTokenMatcherTest do
         location: %{line: 1, column: 1}
       }
     ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
   test ".match_tokens\\1 sets Gherkin dialect correctly" do
