@@ -77,6 +77,19 @@ defmodule Gherkin.TokenMatcher do
           matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}: ", ""),
           location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
         }
+
+      Gherkin.Line.is_background_header?(raw_token.line) ->
+        keyword = Gherkin.Dialect.background_keywords(language)
+                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+
+        %Gherkin.Token{
+          matched_type: :BackgroundLine,
+          matched_indent: Gherkin.Line.indent(raw_token.line),
+          matched_gherkin_dialect: language,
+          matched_keyword: keyword,
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", ""),
+          location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
+        }
     end
   end
 end

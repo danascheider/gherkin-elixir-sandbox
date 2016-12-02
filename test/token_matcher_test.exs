@@ -105,6 +105,27 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
+  test ".match_tokens\\1 matches a background line" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 5},
+        line: %Gherkin.Line{text: "    Background:", line_number: 5}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :BackgroundLine,
+        matched_keyword: "Background",
+        matched_text: "",
+        matched_indent: 4,
+        location: %{line: 5, column: 5}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
   test ".match_tokens\\1 matches an Empty token" do
     input           = [
       %Gherkin.RawToken{
