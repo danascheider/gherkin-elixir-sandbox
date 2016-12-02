@@ -1,4 +1,6 @@
 defmodule Gherkin.Line do
+  @language_pattern ~r/^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*\z/
+
   defstruct text: "", line_number: 1
 
   def trimmed_text(line), do: String.trim_leading(line.text)
@@ -22,7 +24,7 @@ defmodule Gherkin.Line do
     match_title_line(line, Gherkin.Dialect.examples_keywords(language))
   end
 
-  def is_language_header?(line), do: Regex.match?(~r/\# language\: (.*)/, line.text)
+  def is_language_header?(line), do: Regex.match?(@language_pattern, line.text)
 
   def is_feature_header?(line, language \\ "en") do
     match_title_line(line, Gherkin.Dialect.feature_keywords(language))

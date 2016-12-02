@@ -39,4 +39,26 @@ defmodule GherkinTokenMatcherTest do
 
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
+
+  test ".match_tokens\\1 matches tag token" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 1},
+        line: %Gherkin.Line{text: "   @one @two @three", line_number: 1}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :TagLine,
+        matched_items: [
+          %Gherkin.Tag{text: "one", column: 4},
+          %Gherkin.Tag{text: "two", column: 9},
+          %Gherkin.Tag{text: "three", column: 14}
+        ]
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
 end
