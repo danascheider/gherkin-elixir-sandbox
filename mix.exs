@@ -32,9 +32,7 @@ defmodule Gherkin.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:json, "~> 0.3.0"},
-      {:observer_cli, "~> 1.0.7"},
-      {:mock, "~>0.1.1", only: :test}
+      {:json, "~> 0.3.0"}
     ]
   end
 
