@@ -69,4 +69,24 @@ defmodule GherkinTokenScannerTest do
 
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
+
+  test ".get_raw_tokens\\1 generates tokens when the language is set" do
+    input           = "language: af\nFeature: See if this works"
+    expected_output = [
+      %Gherkin.RawToken{
+        location: %{line: 1},
+        line: %Gherkin.Line{text: "language: af", line_number: 1}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 2},
+        line: %Gherkin.Line{text: "Feature: See if this works", line_number: 2}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 3},
+        line: %Gherkin.Line{text: nil, line_number: 3}
+      }
+    ]
+
+    assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
+  end
 end
