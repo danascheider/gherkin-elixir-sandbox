@@ -126,6 +126,48 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
+  test ".match_tokens\\1 matches a scenario outline line" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 5},
+        line: %Gherkin.Line{text: "    Scenario Outline: Foobar", line_number: 5}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :ScenarioOutlineLine,
+        matched_keyword: "Scenario Outline",
+        matched_text: "Foobar",
+        matched_indent: 4,
+        location: %{line: 5, column: 5}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
+  test ".match_tokens\\1 matches an examples line" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 5},
+        line: %Gherkin.Line{text: "    Examples:", line_number: 5}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :ExamplesLine,
+        matched_keyword: "Examples",
+        matched_text: "",
+        matched_indent: 4,
+        location: %{line: 5, column: 5}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
   test ".match_tokens\\1 matches an Empty token" do
     input           = [
       %Gherkin.RawToken{
@@ -139,6 +181,26 @@ defmodule GherkinTokenMatcherTest do
         matched_type: :Empty,
         matched_text: nil,
         location: %{line: 1, column: 1}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
+  test ".match_tokens\\1 matches a comment" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 1},
+        line: %Gherkin.Line{text: "  # Foo bar baz", line_number: 1}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :Comment,
+        matched_indent: 2,
+        matched_text: "# Foo bar baz",
+        location: %{line: 1, column: 3}
       }
     ]
 

@@ -61,7 +61,7 @@ defmodule Gherkin.TokenMatcher do
           matched_indent: Gherkin.Line.indent(raw_token.line),
           matched_gherkin_dialect: language,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}: ", ""),
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
           location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
         }
 
@@ -74,7 +74,7 @@ defmodule Gherkin.TokenMatcher do
           matched_indent: Gherkin.Line.indent(raw_token.line),
           matched_gherkin_dialect: language,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}: ", ""),
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
           location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
         }
 
@@ -87,7 +87,41 @@ defmodule Gherkin.TokenMatcher do
           matched_indent: Gherkin.Line.indent(raw_token.line),
           matched_gherkin_dialect: language,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", ""),
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
+        }
+
+      Gherkin.Line.is_scenario_outline_header?(raw_token.line) ->
+        keyword = Gherkin.Dialect.scenario_outline_keywords(language)
+                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+
+        %Gherkin.Token{
+          matched_type: :ScenarioOutlineLine,
+          matched_indent: Gherkin.Line.indent(raw_token.line),
+          matched_gherkin_dialect: language,
+          matched_keyword: keyword,
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
+        }
+
+      Gherkin.Line.is_examples_header?(raw_token.line) ->
+        keyword = Gherkin.Dialect.examples_keywords(language)
+                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+
+        %Gherkin.Token{
+          matched_type: :ExamplesLine,
+          matched_indent: Gherkin.Line.indent(raw_token.line),
+          matched_gherkin_dialect: language,
+          matched_keyword: keyword,
+          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
+        }
+
+      Gherkin.Line.is_comment?(raw_token.line) ->
+        %Gherkin.Token{
+          matched_type: :Comment,
+          matched_indent: Gherkin.Line.indent(raw_token.line),
+          matched_text: Gherkin.Line.trimmed_text(raw_token.line),
           location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1}
         }
     end
