@@ -30,19 +30,19 @@ defmodule GherkinTokenScannerTest do
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
 
-  # test ".get_tokens\\2 generates tokens" do
-  #   input           = "Feature: See if this works"
-  #   expected_output = [
-  #     %Gherkin.RawToken{
-  #       location: %{line: 1},
-  #       line: %Gherkin.Line{text: "Feature: See if this works", line_number: 1}
-  #     },
-  #     %Gherkin.RawToken{
-  #       location: %{line: 2},
-  #       line: %Gherkin.Line{text: nil, line_number: 2}
-  #     }
-  #   ]
+  test ".get_tokens generates tokens" do
+    input           = "Feature: See if this works"
+    expected_output = [
+      %Gherkin.RawToken{
+        location: %{line: 1},
+        line: %Gherkin.Line{text: "Feature: See if this works", line_number: 1}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 2},
+        line: %Gherkin.Line{text: nil, line_number: 2}
+      }
+    ]
 
-  #   assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
-  # end
+    assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
+  end
 end
