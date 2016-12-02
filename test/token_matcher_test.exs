@@ -84,6 +84,27 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
+  test ".match_tokens\\1 matches a scenario line" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 3},
+        line: %Gherkin.Line{text: "  Scenario: User login", line_number: 3}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :ScenarioLine,
+        matched_keyword: "Scenario",
+        matched_text: "User login",
+        matched_indent: 2,
+        location: %{line: 3, column: 3}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
   test ".match_tokens\\1 matches an Empty token" do
     input           = [
       %Gherkin.RawToken{
