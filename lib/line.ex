@@ -48,20 +48,20 @@ defmodule Gherkin.Line do
     {keyword, String.replace(Gherkin.Line.trimmed_text(line), "#{keyword}:", "") |> String.trim}
   end
 
-  def header_type(line, language \\ "en") do
+  def header_type(keyword, language \\ "en") do
     cond do
-      Enum.find(Gherkin.Dialect.feature_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+      Enum.member?(Gherkin.Dialect.feature_keywords(language), keyword) ->
         :FeatureLine
-      Enum.find(Gherkin.Dialect.background_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+      Enum.member?(Gherkin.Dialect.background_keywords(language), keyword) ->
         :BackgroundLine
-      Enum.find(Gherkin.Dialect.scenario_outline_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+      Enum.member?(Gherkin.Dialect.scenario_outline_keywords(language), keyword) ->
         :ScenarioOutlineLine
-      Enum.find(Gherkin.Dialect.scenario_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+      Enum.member?(Gherkin.Dialect.scenario_keywords(language), keyword) ->
         :ScenarioLine
-      Enum.find(Gherkin.Dialect.examples_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+      Enum.member?(Gherkin.Dialect.examples_keywords(language), keyword) ->
         :ExamplesLine
       true ->
-        raise "Expected header, got '#{trimmed_text(line)}'"
+        raise "Expected header keyword, got '#{keyword}'"
     end
   end
 

@@ -55,7 +55,7 @@ defmodule Gherkin.TokenMatcher do
 
       Gherkin.Line.is_header?(raw_token.line, language) ->
         {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.header_keywords(language))
-        matched_type    = Gherkin.Line.header_type(raw_token.line, language)
+        matched_type    = Gherkin.Line.header_type(keyword, language)
 
         %{ token |
           matched_type: matched_type,
