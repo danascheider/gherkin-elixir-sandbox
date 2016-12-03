@@ -53,55 +53,20 @@ defmodule Gherkin.TokenMatcher do
           location: %{line: raw_token.line.line_number, column: 1}
         }
 
-      Gherkin.Line.is_feature_header?(raw_token.line) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.feature_keywords(language))
+      Gherkin.Line.is_header?(raw_token.line, language) ->
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.header_keywords(language))
+        matched_type    = Gherkin.Line.header_type(raw_token.line, language)
 
         %{ token |
-          matched_type: :FeatureLine,
+          matched_type: matched_type,
           matched_keyword: keyword,
           matched_text: text,
-        }
-
-      Gherkin.Line.is_scenario_header?(raw_token.line) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.scenario_keywords(language))
-
-        %{ token |
-          matched_type: :ScenarioLine,
-          matched_keyword: keyword,
-          matched_text: text,
-        }
-
-      Gherkin.Line.is_background_header?(raw_token.line) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.background_keywords(language))
-
-        %{ token |
-          matched_type: :BackgroundLine,
-          matched_keyword: keyword,
-          matched_text: text
-        }
-
-      Gherkin.Line.is_scenario_outline_header?(raw_token.line) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.scenario_outline_keywords(language))
-
-        %{ token |
-          matched_type: :ScenarioOutlineLine,
-          matched_keyword: keyword,
-          matched_text: text,
-        }
-
-      Gherkin.Line.is_examples_header?(raw_token.line) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.examples_keywords(language))
-
-        %{ token |
-          matched_type: :ExamplesLine,
-          matched_keyword: keyword,
-          matched_text: text
         }
 
       Gherkin.Line.is_comment?(raw_token.line) ->
         %{ token |
           matched_type: :Comment,
-          matched_text: Gherkin.Line.trimmed_text(raw_token.line),
+          matched_text: Gherkin.Line.trimmed_text(raw_token.line)
         }
     end
   end

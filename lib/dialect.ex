@@ -51,6 +51,10 @@ defmodule Gherkin.Dialect do
     given_keywords(dialect) ++ when_keywords(dialect) ++ then_keywords(dialect) ++ and_keywords(dialect) ++ but_keywords(dialect) |> Enum.uniq
   end
 
+  def header_keywords(dialect) do
+    background_keywords(dialect) ++ examples_keywords(dialect) ++ feature_keywords(dialect) ++ scenario_keywords(dialect) ++ scenario_outline_keywords(dialect) ++ examples_keywords(dialect)
+  end
+
   defp fetch(lang, keyword) do
     Gherkin.Dialect.for(lang) |> Map.get(keyword)
   end

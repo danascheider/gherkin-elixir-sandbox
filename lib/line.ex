@@ -20,6 +20,10 @@ defmodule Gherkin.Line do
 
   def is_eof?(line), do: line.text == nil
 
+  def is_header?(line, language \\ "en") do
+    Enum.any?(Gherkin.Dialect.header_keywords(language), fn(keyword) -> Gherkin.Line.starts_with?(line, keyword) end)
+  end
+
   def is_examples_header?(line, language \\ "en") do
     match_title_line(line, Gherkin.Dialect.examples_keywords(language))
   end
@@ -39,9 +43,26 @@ defmodule Gherkin.Line do
   end
 
   def header_elements(line, keywords) do
-    keyword = Enum.find(keywords, fn(keyword) -> Gherkin.Line.starts_with?(line, keyword) end)
+    keyword = Enum.find(keywords, fn(keyword) -> Gherkin.Line.starts_with?(line, "#{keyword}:") end)
 
     {keyword, String.replace(Gherkin.Line.trimmed_text(line), "#{keyword}:", "") |> String.trim}
+  end
+
+  def header_type(line, language \\ "en") do
+    cond do
+      Enum.find(Gherkin.Dialect.feature_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+        :FeatureLine
+      Enum.find(Gherkin.Dialect.background_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+        :BackgroundLine
+      Enum.find(Gherkin.Dialect.scenario_outline_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+        :ScenarioOutlineLine
+      Enum.find(Gherkin.Dialect.scenario_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+        :ScenarioLine
+      Enum.find(Gherkin.Dialect.examples_keywords(language), fn(wd) -> starts_with?(line, wd) end) ->
+        :ExamplesLine
+      true ->
+        raise "Expected header, got '#{trimmed_text(line)}'"
+    end
   end
 
   def is_step?(line, language \\ "en") do
