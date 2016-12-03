@@ -54,53 +54,48 @@ defmodule Gherkin.TokenMatcher do
         }
 
       Gherkin.Line.is_feature_header?(raw_token.line) ->
-        keyword = Gherkin.Dialect.feature_keywords(language) 
-                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.feature_keywords(language))
 
         %{ token |
           matched_type: :FeatureLine,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          matched_text: text,
         }
 
       Gherkin.Line.is_scenario_header?(raw_token.line) ->
-        keyword = Gherkin.Dialect.scenario_keywords(language)
-                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.scenario_keywords(language))
 
         %{ token |
           matched_type: :ScenarioLine,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          matched_text: text,
         }
 
       Gherkin.Line.is_background_header?(raw_token.line) ->
-        keyword = Gherkin.Dialect.background_keywords(language)
-                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.background_keywords(language))
 
         %{ token |
           matched_type: :BackgroundLine,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          matched_text: text
         }
 
       Gherkin.Line.is_scenario_outline_header?(raw_token.line) ->
-        keyword = Gherkin.Dialect.scenario_outline_keywords(language)
-                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.scenario_outline_keywords(language))
 
         %{ token |
           matched_type: :ScenarioOutlineLine,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          matched_text: text,
         }
 
       Gherkin.Line.is_examples_header?(raw_token.line) ->
-        keyword = Gherkin.Dialect.examples_keywords(language)
-                  |> Enum.find(fn(keyword) -> Gherkin.Line.starts_with?(raw_token.line, keyword) end)
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.examples_keywords(language))
 
         %{ token |
           matched_type: :ExamplesLine,
           matched_keyword: keyword,
-          matched_text: String.replace(Gherkin.Line.trimmed_text(raw_token.line), "#{keyword}:", "") |> String.trim,
+          matched_text: text
         }
 
       Gherkin.Line.is_comment?(raw_token.line) ->

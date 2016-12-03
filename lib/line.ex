@@ -38,6 +38,12 @@ defmodule Gherkin.Line do
     match_title_line(line, Gherkin.Dialect.scenario_outline_keywords(language))
   end
 
+  def header_elements(line, keywords) do
+    keyword = Enum.find(keywords, fn(keyword) -> Gherkin.Line.starts_with?(line, keyword) end)
+
+    {keyword, String.replace(Gherkin.Line.trimmed_text(line), "#{keyword}:", "") |> String.trim}
+  end
+
   def is_step?(line, language \\ "en") do
     match_step_line(line, Gherkin.Dialect.step_keywords(language))
   end
