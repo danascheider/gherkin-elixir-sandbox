@@ -8,21 +8,23 @@ defmodule Gherkin.TokenMatcher do
   def match_tokens([head | tail], context) do
     token_matched       = match_token(head, context)
     dialect             = token_matched.matched_gherkin_dialect || context.language
+    separator           = set_separator(token_matched, context)
 
-    separator = if token_matched.matched_type == :DocStringSeparator do
-      cond do
-        context.active_docstring_separator == nil ->
-          token_matched.matched_text
-        context.active_docstring_separator == token_matched.matched_text ->
-          nil
-        true ->
-          context.active_docstring_separator
-      end
-    end
-
-    new_context = %{context | language: dialect, active_docstring_separator: separator}
+    new_context = %{language: dialect, active_docstring_separator: separator}
 
     [ match_token(head, new_context) ] ++ match_tokens(tail, new_context)
+  end
+
+  defp set_separator(token, context) do
+    if token.matched_type == :DocStringSeparator do
+      cond do
+        context.active_docstring_separator == nil -> token.matched_text
+        context.active_docstring_separator == token.matched_text -> nil
+        true -> context.active_docstring_separator
+      end
+    else
+      context.active_docstring_separator
+    end
   end
 
   defp match_token(%Gherkin.RawToken{line: %Gherkin.Line{text: nil, line_number: num}, location: _}, context) do
