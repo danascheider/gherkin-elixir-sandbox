@@ -6,8 +6,21 @@ defmodule Gherkin.TokenMatcher do
   end
 
   def match_tokens([head | tail], context) do
-    dialect     = match_token(head, context).matched_gherkin_dialect || context.language
-    new_context = %{context | language: dialect}
+    token_matched       = match_token(head, context)
+    dialect             = token_matched.matched_gherkin_dialect || context.language
+
+    separator = if token_matched.matched_type == :DocStringSeparator do
+      cond do
+        context.active_docstring_separator == nil ->
+          token_matched.matched_text
+        context.active_docstring_separator == token_matched.matched_text ->
+          nil
+        true ->
+          context.active_docstring_separator
+      end
+    end
+
+    new_context = %{context | language: dialect, active_docstring_separator: separator}
 
     [ match_token(head, new_context) ] ++ match_tokens(tail, new_context)
   end
@@ -35,7 +48,7 @@ defmodule Gherkin.TokenMatcher do
         %{ token |
           matched_type: :Language,
           matched_gherkin_dialect: dialect_name,
-          matched_text: dialect_name,
+          matched_text: dialect_name
         }
 
       Gherkin.Line.is_tags?(raw_token.line) ->
