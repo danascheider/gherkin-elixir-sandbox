@@ -1,31 +1,31 @@
 defmodule Gherkin.TokenMatcher do
-  def match_tokens(list, language \\ "en")
+  def match_tokens(list, context \\ %Gherkin.ParserContext{})
 
-  def match_tokens([], _language) do
+  def match_tokens([], _context) do
     []
   end
 
-  def match_tokens([head | tail], language) do
-    dialect = match_token(head, language).matched_gherkin_dialect || language
+  def match_tokens([head | tail], context) do
+    dialect     = match_token(head, context).matched_gherkin_dialect || context.language
+    new_context = %{context | language: dialect}
 
-    [ match_token(head, dialect) ] ++ match_tokens(tail, dialect)
+    [ match_token(head, new_context) ] ++ match_tokens(tail, new_context)
   end
 
-  defp match_token(%Gherkin.RawToken{line: %Gherkin.Line{text: nil, line_number: num}, location: _}, language) do
+  defp match_token(%Gherkin.RawToken{line: %Gherkin.Line{text: nil, line_number: num}, location: _}, context) do
     %Gherkin.Token{
       matched_type: :EOF,
       matched_indent: 0,
-      matched_gherkin_dialect: language,
+      matched_gherkin_dialect: context.language,
       location: %{line: num, column: 1}
     }
   end
 
-  defp match_token(raw_token, language) do
-
+  defp match_token(raw_token, context) do
     token = %Gherkin.Token{
       matched_indent: Gherkin.Line.indent(raw_token.line),
       location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1},
-      matched_gherkin_dialect: language
+      matched_gherkin_dialect: context.language
     }
 
     cond do
@@ -53,14 +53,20 @@ defmodule Gherkin.TokenMatcher do
           location: %{line: raw_token.line.line_number, column: 1}
         }
 
-      Gherkin.Line.is_header?(raw_token.line, language) ->
-        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.header_keywords(language))
-        matched_type    = Gherkin.Line.header_type(keyword, language)
+      Gherkin.Line.is_docstring_separator?(raw_token.line) ->
+        %{ token |
+          matched_type: :DocStringSeparator,
+          matched_keyword: Gherkin.Line.trimmed_text(raw_token.line)
+        }
+
+      Gherkin.Line.is_header?(raw_token.line, context.language) ->
+        {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.header_keywords(context.language))
+        matched_type    = Gherkin.Line.header_type(keyword, context.language)
 
         %{ token |
           matched_type: matched_type,
           matched_keyword: keyword,
-          matched_text: text,
+          matched_text: text
         }
 
       Gherkin.Line.is_comment?(raw_token.line) ->

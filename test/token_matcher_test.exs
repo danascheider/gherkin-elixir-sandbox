@@ -2,7 +2,7 @@ defmodule GherkinTokenMatcherTest do
   use ExUnit.Case
   doctest Gherkin.TokenMatcher
 
-  test ".match_tokens\\1 matches EOF token" do
+  test ".match_tokens\\2 matches EOF token" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -20,7 +20,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches language token" do
+  test ".match_tokens\\2 matches language token" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -40,7 +40,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches tag token" do
+  test ".match_tokens\\2 matches tag token" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -64,7 +64,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches a feature line token" do
+  test ".match_tokens\\2 matches a feature line token" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -84,7 +84,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches a scenario line" do
+  test ".match_tokens\\2 matches a scenario line" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 3},
@@ -105,7 +105,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches a background line" do
+  test ".match_tokens\\2 matches a background line" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 5},
@@ -126,7 +126,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches a scenario outline line" do
+  test ".match_tokens\\2 matches a scenario outline line" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 5},
@@ -147,7 +147,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches an examples line" do
+  test ".match_tokens\\2 matches an examples line" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 5},
@@ -168,7 +168,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches an Empty token" do
+  test ".match_tokens\\2 matches an Empty token" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -187,7 +187,7 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 matches a comment" do
+  test ".match_tokens\\2 matches a comment" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
@@ -207,7 +207,37 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
-  test ".match_tokens\\1 sets Gherkin dialect correctly" do
+  test ".match_tokens\\2 matches a docstring separator" do
+    input = [
+      %Gherkin.RawToken{
+        location: %{line: 10},
+        line: %Gherkin.Line{text: "   ```", line_number: 10}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 11},
+        line: %Gherkin.Line{text: "   \"\"\"", line_number: 11}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :DocStringSeparator,
+        matched_indent: 3,
+        matched_keyword: "```",
+        location: %{line: 10, column: 4}
+      },
+      %Gherkin.Token{
+        matched_type: :DocStringSeparator,
+        matched_indent: 3,
+        matched_keyword: "\"\"\"",
+        location: %{line: 11, column: 4}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
+  test ".match_tokens\\2 sets Gherkin dialect correctly" do
     input           = [
       %Gherkin.RawToken{
         location: %{line: 1},
