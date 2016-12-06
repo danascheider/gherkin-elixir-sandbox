@@ -74,6 +74,15 @@ defmodule Gherkin.TokenMatcher do
           matched_keyword: Gherkin.Line.trimmed_text(raw_token.line)
         }
 
+      keyword = Gherkin.Line.is_step?(raw_token.line, context.language) ->
+        text = String.replace_leading(raw_token.line.text, keyword, "")
+
+        %{ token |
+          matched_type: :StepLine,
+          matched_keyword: keyword,
+          matched_text: text
+        }
+
       Gherkin.Line.is_header?(raw_token.line, context.language) ->
         {keyword, text} = Gherkin.Line.header_elements(raw_token.line, Gherkin.Dialect.header_keywords(context.language))
         matched_type    = Gherkin.Line.header_type(keyword, context.language)

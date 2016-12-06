@@ -207,6 +207,66 @@ defmodule GherkinTokenMatcherTest do
     assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
   end
 
+  test ".match_tokens\\2 matches step tokens" do
+    input           = [
+      %Gherkin.RawToken{
+        location: %{line: 3},
+        line: %Gherkin.Line{text: "Given I am a user", line_number: 3}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 4},
+        line: %Gherkin.Line{text: "When I fill out the login form", line_number: 4}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 5},
+        line: %Gherkin.Line{text: "And I click the submit button", line_number: 5}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 6},
+        line: %Gherkin.Line{text: "Then I should see my profile", line_number: 6}
+      },
+      %Gherkin.RawToken{
+        location: %{line: 7},
+        line: %Gherkin.Line{text: "But I should not see other users' profiles", line_number: 7}
+      }
+    ]
+
+    expected_output = [
+      %Gherkin.Token{
+        matched_type: :StepLine,
+        matched_keyword: "Given ",
+        matched_text: "I am a user",
+        location: %{line: 3, column: 1}
+      },
+      %Gherkin.Token{
+        matched_type: :StepLine,
+        matched_keyword: "When ",
+        matched_text: "I fill out the login form",
+        location: %{line: 4, column: 1}
+      },
+      %Gherkin.Token{
+        matched_type: :StepLine,
+        matched_keyword: "And ",
+        matched_text: "I click the submit button",
+        location: %{line: 5, column: 1}
+      },
+      %Gherkin.Token{
+        matched_type: :StepLine,
+        matched_keyword: "Then ",
+        matched_text: "I should see my profile",
+        location: %{line: 6, column: 1}
+      },
+      %Gherkin.Token{
+        matched_type: :StepLine,
+        matched_keyword: "But ",
+        matched_text: "I should not see other users' profiles",
+        location: %{line: 7, column: 1}
+      }
+    ]
+
+    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+  end
+
   test ".match_tokens\\2 matches a docstring separator" do
     input = [
       %Gherkin.RawToken{

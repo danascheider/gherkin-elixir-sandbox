@@ -95,6 +95,6 @@ defmodule Gherkin.Line do
   end
 
   defp match_step_line(line, keywords) do
-    !!Enum.find(keywords, fn(keyword) -> starts_with?(line, keyword) end)
+    Enum.find(keywords, fn(keyword) -> starts_with?(line, keyword) end)
   end
 end
