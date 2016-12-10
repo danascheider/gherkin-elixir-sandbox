@@ -4,7 +4,7 @@ defmodule Gherkin.AstNode do
 
   def add(ast_node = %Gherkin.AstNode{rule_type: type, sub_items: items}, rule_type, object) do
     list = get_items(ast_node, rule_type) |> List.insert_at(-1, object)
-    
+
     sub_items = if Map.has_key?(items, rule_type) do
       %{ items | rule_type => list }
     else
@@ -21,5 +21,9 @@ defmodule Gherkin.AstNode do
     else
       []
     end
+  end
+
+  def get_single(ast_node, rule_type) do
+    get_items(ast_node, rule_type) |> List.first
   end
 end
