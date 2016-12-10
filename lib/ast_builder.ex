@@ -5,4 +5,8 @@ defmodule Gherkin.AstBuilder do
       comments: []
     }
   end
+
+  def start_rule(stack, rule_type) do
+    List.insert_at(stack, -1, %Gherkin.AstNode{rule_type: rule_type})
+  end
 end
