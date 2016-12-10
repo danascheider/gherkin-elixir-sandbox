@@ -20,4 +20,13 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.start_rule(stack, :Foobar) == output
   end
+
+  test ".current_node//1 returns the last node in the stack" do
+    stack = [
+      %Gherkin.AstNode{rule_type: :None},
+      %Gherkin.AstNode{rule_type: :GherkinDocument}
+    ]
+
+    assert Gherkin.AstBuilder.current_node(stack) == %Gherkin.AstNode{rule_type: :GherkinDocument}
+  end
 end
