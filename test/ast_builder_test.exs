@@ -29,4 +29,35 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.current_node(stack) == %Gherkin.AstNode{rule_type: :GherkinDocument}
   end
+
+  test ".transform_node//1 when the rule type is :Step transforms the node" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :Step,
+      sub_items: %{
+        :StepLine => [
+          %Gherkin.Token{
+            matched_type: :StepLine, 
+            matched_keyword: "Given ",
+            matched_text: "I am the walrus",
+            location: %{line: 3, column: 4}}
+        ],
+        :DocString => [
+          %Gherkin.Token{
+            matched_type: :DocString,
+            matched_text: "foo bar baz"
+          }
+        ]
+      }
+    }
+
+    expected_output = %{
+      type: :Step,
+      location: %{line: 3, column: 4},
+      keyword: "Given ",
+      text: "I am the walrus",
+      argument: %Gherkin.Token{matched_type: :DocString, matched_text: "foo bar baz"}
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
 end
