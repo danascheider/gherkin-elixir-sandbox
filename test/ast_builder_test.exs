@@ -3,6 +3,11 @@ defmodule GherkinAstBuilderTest do
   doctest Gherkin.AstBuilder
 
   test ".reset/0 returns a reset stack" do
-    assert Gherkin.AstBuilder.reset == [%Gherkin.AstNode{rule_type: :None}]
+    expected_output = %{
+      stack: [%Gherkin.AstNode{rule_type: :None}],
+      comments: []
+    }
+    
+    assert Gherkin.AstBuilder.reset == expected_output
   end
 end
