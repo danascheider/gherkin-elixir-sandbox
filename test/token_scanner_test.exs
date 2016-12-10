@@ -2,7 +2,7 @@ defmodule GherkinTokenScannerTest do
   use ExUnit.Case
   doctest Gherkin.TokenScanner
 
-  test ".get_raw_tokens\\1 generates EOF token when file is empty" do
+  test ".get_raw_tokens/1 generates EOF token when file is empty" do
     input           = nil
     expected_output = [
       %Gherkin.RawToken{
@@ -14,7 +14,7 @@ defmodule GherkinTokenScannerTest do
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
 
-  test ".get_raw_tokens\\1 generates Empty token when file contains blank line" do
+  test ".get_raw_tokens/1 generates Empty token when file contains blank line" do
     input           = ""
     expected_output = [
       %Gherkin.RawToken{
@@ -30,7 +30,7 @@ defmodule GherkinTokenScannerTest do
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
 
-  test ".get_raw_tokens\\1 generates tokens" do
+  test ".get_raw_tokens/1 generates tokens" do
     input           = "Feature: See if this works"
     expected_output = [
       %Gherkin.RawToken{
@@ -46,7 +46,7 @@ defmodule GherkinTokenScannerTest do
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
 
-  test ".get_raw_tokens\\1 generates more tokens" do
+  test ".get_raw_tokens/1 generates more tokens" do
     input           = "Feature: See if this works\n\n  Scenario: Something else"
     expected_output = [
       %Gherkin.RawToken{
@@ -70,7 +70,7 @@ defmodule GherkinTokenScannerTest do
     assert Gherkin.TokenScanner.get_raw_tokens(input) == expected_output
   end
 
-  test ".get_raw_tokens\\1 generates tokens when the language is set" do
+  test ".get_raw_tokens/1 generates tokens when the language is set" do
     input           = "language: af\nFeature: See if this works"
     expected_output = [
       %Gherkin.RawToken{

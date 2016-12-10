@@ -2,7 +2,7 @@ defmodule GherkinTagTest do
   use ExUnit.Case
   doctest Gherkin.Tag
 
-  test ".tags\\1 returns the tags" do
+  test ".tags/1 returns the tags" do
     input = "   @one @two"
 
     assert Gherkin.Tag.tags(input) == [
