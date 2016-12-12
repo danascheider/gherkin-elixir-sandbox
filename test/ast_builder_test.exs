@@ -60,4 +60,29 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
+
+  test ".transform_node//1 when the rule type is :DocString transforms the node" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :DocString,
+      sub_items: %{
+        :DocStringSeparator => [
+          %Gherkin.Token{matched_type: :DocStringSeparator, matched_keyword: "\"\"\"", matched_text: "json", location: %{line: 4, column: 6}},
+          %Gherkin.Token{matched_type: :DocStringSeparator, matched_keyword: "\`\`\`"}
+        ],
+        :Other => [
+          %Gherkin.Token{matched_type: :Other, matched_text: "Foo"},
+          %Gherkin.Token{matched_type: :Other, matched_text: "Bar"}
+        ]
+      }
+    }
+
+    expected_output = %{
+      type: :DocString,
+      location: %{line: 4, column: 6},
+      content_type: "json",
+      content: "Foo\nBar"
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
 end

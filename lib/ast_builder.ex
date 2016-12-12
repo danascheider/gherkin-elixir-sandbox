@@ -25,4 +25,25 @@ defmodule Gherkin.AstBuilder do
       argument: arg
     }
   end
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DocString, sub_items: items}) do
+    separator    = Gherkin.AstNode.get_single(ast_node, :DocStringSeparator)
+
+    content_type = if separator.matched_text == "" do
+      nil
+    else
+      separator.matched_text
+    end
+
+    content = Gherkin.AstNode.get_items(ast_node, :Other) 
+                |> Enum.map(fn(t) -> t.matched_text end)
+                |> Enum.join("\n")
+
+    %{
+      type: :DocString,
+      location: separator.location,
+      content_type: content_type,
+      content: content
+    }
+  end
 end
