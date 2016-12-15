@@ -42,9 +42,11 @@ defmodule GherkinAstBuilderTest do
 
   test ".build/2 adds comment token to the comments" do
     input = {[%Gherkin.AstNode{}], []}
-    token = %Gherkin.Token{matched_type: :Comment}
+    token = %Gherkin.Token{matched_type: :Comment, location: %{line: 2, column: 3}, matched_text: "This is a comment"}
 
-    assert Gherkin.AstBuilder.build(input, token) == {[%Gherkin.AstNode{}], [%Gherkin.Token{matched_type: :Comment}]}
+    modified_token = %{type: :Comment, location: %{line: 2, column: 3}, text: "This is a comment"}
+
+    assert Gherkin.AstBuilder.build(input, token) == {[%Gherkin.AstNode{}], [modified_token]}
   end
 
   test ".transform_node/1 when the rule type is :Step transforms the node" do

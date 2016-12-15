@@ -15,7 +15,7 @@ defmodule Gherkin.AstBuilder do
   end
 
   def build({stack, comments}, token = %{matched_type: :Comment}) do
-    {stack, List.insert_at(comments, -1, token)}
+    {stack, List.insert_at(comments, -1, %{type: :Comment, location: token.location, text: token.matched_text})}
   end
 
   def build({stack, comments}, token) do
