@@ -11,7 +11,7 @@ defmodule GherkinAstNodeTest do
       }
     }
 
-    assert Gherkin.AstNode.add(%Gherkin.AstNode{}, :None, object)
+    assert Gherkin.AstNode.add(%Gherkin.AstNode{}, :None, object) == expected_output
   end
 
   test "#get_items/2 retrieves sub-items if they exist" do
