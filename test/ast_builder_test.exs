@@ -30,6 +30,16 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.current_node(stack) == %Gherkin.AstNode{rule_type: :GherkinDocument}
   end
 
+  test ".build/2 builds the tree" do
+    stack = [
+      %Gherkin.AstNode{}
+    ]
+
+    token = %Gherkin.Token{matched_type: :FeatureLine}
+
+    assert Gherkin.AstBuilder.build({stack, []}, token) == {[%Gherkin.AstNode{sub_items: %{:FeatureLine => [token]}}], []}
+  end
+
   test ".transform_node/1 when the rule type is :Step transforms the node" do
     ast_node = %Gherkin.AstNode{
       rule_type: :Step,

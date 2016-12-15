@@ -14,6 +14,10 @@ defmodule Gherkin.AstBuilder do
     List.last(stack)
   end
 
+  def build({stack, comments}, token) do
+    {List.replace_at(stack, -1, Gherkin.AstNode.add(current_node(stack), token.matched_type, token)), comments}
+  end
+
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step, sub_items: items}) do
     arg = Gherkin.AstNode.get_single(ast_node, :DataTable) || Gherkin.AstNode.get_single(ast_node, :DocString)
 
