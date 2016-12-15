@@ -21,7 +21,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.start_rule(stack, :Foobar) == output
   end
 
-  test ".current_node//1 returns the last node in the stack" do
+  test ".current_node/1 returns the last node in the stack" do
     stack = [
       %Gherkin.AstNode{rule_type: :None},
       %Gherkin.AstNode{rule_type: :GherkinDocument}
@@ -30,7 +30,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.current_node(stack) == %Gherkin.AstNode{rule_type: :GherkinDocument}
   end
 
-  test ".transform_node//1 when the rule type is :Step transforms the node" do
+  test ".transform_node/1 when the rule type is :Step transforms the node" do
     ast_node = %Gherkin.AstNode{
       rule_type: :Step,
       sub_items: %{
@@ -61,7 +61,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node//1 when the rule type is :DocString transforms the node" do
+  test ".transform_node/1 when the rule type is :DocString transforms the node" do
     ast_node = %Gherkin.AstNode{
       rule_type: :DocString,
       sub_items: %{
@@ -81,6 +81,40 @@ defmodule GherkinAstBuilderTest do
       location: %{line: 4, column: 6},
       content_type: "json",
       content: "Foo\nBar"
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
+
+  test ".transform_node/1 when the rule type is :Background transforms the node" do
+    ast_node      = %Gherkin.AstNode{
+      rule_type: :Background,
+      sub_items: %{
+        :BackgroundLine => [
+          %Gherkin.Token{
+            matched_type: :BackgroundLine, 
+            location: %{line: 3, column: 7}, 
+            matched_keyword: "Background",
+            matched_text: "Foobar"
+          }
+        ],
+        :Description => [
+          %Gherkin.Token{matched_type: :Description, matched_text: "Hello world"}
+        ],
+        :Step => [
+          %Gherkin.Token{matched_type: :Step},
+          %Gherkin.Token{matched_type: :Step}
+        ]
+      }
+    }
+
+    expected_output = %{
+      type: :Background,
+      location: %{line: 3, column: 7},
+      keyword: "Background",
+      name: "Foobar",
+      description: %Gherkin.Token{matched_type: :Description, matched_text: "Hello world"},
+      steps: [%Gherkin.Token{matched_type: :Step}, %Gherkin.Token{matched_type: :Step}]
     }
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output

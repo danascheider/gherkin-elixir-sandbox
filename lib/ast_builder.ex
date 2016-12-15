@@ -26,7 +26,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DocString, sub_items: items}) do
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DocString, sub_items: _}) do
     separator    = Gherkin.AstNode.get_single(ast_node, :DocStringSeparator)
 
     content_type = if separator.matched_text == "" do
@@ -44,6 +44,19 @@ defmodule Gherkin.AstBuilder do
       location: separator.location,
       content_type: content_type,
       content: content
+    }
+  end
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Background, sub_items: _}) do
+    background_line = Gherkin.AstNode.get_single(ast_node, :BackgroundLine)
+
+    %{
+      type: :Background,
+      location: background_line.location,
+      keyword: background_line.matched_keyword,
+      name: background_line.matched_text,
+      description: Gherkin.AstNode.get_single(ast_node, :Description),
+      steps: Gherkin.AstNode.get_items(ast_node, :Step)
     }
   end
 end
