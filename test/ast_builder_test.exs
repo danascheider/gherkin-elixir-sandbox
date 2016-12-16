@@ -21,6 +21,24 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.start_rule(stack, :Foobar) == output
   end
 
+  test ".end_rule/1 builds the final node" do
+    stack  = [
+      %Gherkin.AstNode{rule_type: :None}, 
+      %Gherkin.AstNode{
+        rule_type: :Step,
+        sub_items: %{
+          :StepLine => [%Gherkin.Token{matched_type: :StepLine}]
+        }
+      }
+    ]
+
+    output = [
+      Gherkin.AstNode.add(%Gherkin.AstNode{rule_type: :None}, :Step, Gherkin.AstBuilder.transform_node(%Gherkin.AstNode{rule_type: :Step, sub_items: %{:StepLine => [%Gherkin.Token{matched_type: :StepLine}]}}))
+    ]
+
+    assert Gherkin.AstBuilder.end_rule(stack)
+  end
+
   test ".current_node/1 returns the last node in the stack" do
     stack = [
       %Gherkin.AstNode{rule_type: :None},

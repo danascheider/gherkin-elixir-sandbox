@@ -10,6 +10,14 @@ defmodule Gherkin.AstBuilder do
     List.insert_at(stack, -1, %Gherkin.AstNode{rule_type: rule_type})
   end
 
+  def end_rule(stack) do
+    ast_node  = Enum.at(stack, -1)
+    new_stack = List.delete_at(stack, -1)
+    new_node  = Gherkin.AstNode.add(current_node(new_stack), ast_node.rule_type, ast_node)
+
+    List.replace_at(new_stack, -1, new_node)
+  end
+
   def current_node(stack) do
     List.last(stack)
   end
