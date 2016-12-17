@@ -38,7 +38,11 @@ defmodule Gherkin.AstBuilder do
       List.replace_at(
         context.stack, 
         -1, 
-        Gherkin.AstNode.add(current_node(context.stack) |> transform_node, token.matched_type, token)
+        Gherkin.AstNode.add(
+          current_node(context.stack) |> transform_node(context.comments), 
+          token.matched_type, 
+          token
+        )
       ), 
       context.comments
     }
