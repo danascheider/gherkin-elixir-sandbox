@@ -128,4 +128,8 @@ defmodule Gherkin.AstBuilder do
       comments: comments
     }
   end
+
+  def transform_node(ast_node, _) do
+    ast_node
+  end
 end
