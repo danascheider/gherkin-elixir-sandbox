@@ -44,7 +44,9 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step, sub_items: items}) do
+  def transform_node(ast_node, comments \\ [])
+
+  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step, sub_items: items}, _) do
     arg = Gherkin.AstNode.get_single(ast_node, :DataTable) || Gherkin.AstNode.get_single(ast_node, :DocString)
 
     %{
@@ -56,7 +58,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %{rule_type: :DocString}) do
+  def transform_node(ast_node = %{rule_type: :DocString}, _) do
     separator    = Gherkin.AstNode.get_single(ast_node, :DocStringSeparator)
 
     content_type = if separator.matched_text == "" do
@@ -77,7 +79,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %{rule_type: :Background}) do
+  def transform_node(ast_node = %{rule_type: :Background}, _) do
     background_line = Gherkin.AstNode.get_single(ast_node, :BackgroundLine)
 
     %{
@@ -90,18 +92,36 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %{rule_type: :ScenarioDefinition}) do
+  def transform_node(ast_node = %{rule_type: :ScenarioDefinition}, _) do
     tags          = Gherkin.AstNode.get_tags(ast_node)
     scenario_node = Gherkin.AstNode.get_single(ast_node, :Scenario)
 
+    if scenario_node == nil do 
+      scenario_outline_node = Gherkin.AstNode.get_single(ast_node, :ScenarioOutline)
+
+      %{
+        type: :ScenarioOutline
+      }
+
+      raise "Not implemented for scenario outline yet"
+    else
+      %{
+        type: :Scenario,
+        tags: tags,
+        location: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).location,
+        keyword: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_keyword,
+        name: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_text,
+        description: Gherkin.AstNode.get_single(scenario_node, :Description),
+        steps: Gherkin.AstNode.get_items(scenario_node, :Step)
+      }
+    end
+  end
+
+  def transform_node(ast_node = %{rule_type: :GherkinDocument}, comments) do
     %{
-      type: :Scenario,
-      tags: tags,
-      location: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).location,
-      keyword: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_keyword,
-      name: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_text,
-      description: Gherkin.AstNode.get_single(scenario_node, :Description),
-      steps: Gherkin.AstNode.get_items(scenario_node, :Step)
+      type: :GherkinDocument,
+      feature: Gherkin.AstNode.get_single(ast_node, :Feature),
+      comments: comments
     }
   end
 end

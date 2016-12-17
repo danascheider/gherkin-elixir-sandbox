@@ -88,7 +88,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.build(input, token) == {[%Gherkin.AstNode{}], [modified_token]}
   end
 
-  test ".transform_node/1 when the rule type is :Step transforms the node" do
+  test ".transform_node/2 when the rule type is :Step transforms the node" do
     ast_node = %Gherkin.AstNode{
       rule_type: :Step,
       sub_items: %{
@@ -119,7 +119,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node/1 when the rule type is :DocString transforms the node" do
+  test ".transform_node/2 when the rule type is :DocString transforms the node" do
     ast_node = %Gherkin.AstNode{
       rule_type: :DocString,
       sub_items: %{
@@ -144,7 +144,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node/1 when the rule type is :Background transforms the node" do
+  test ".transform_node/2 when the rule type is :Background transforms the node" do
     ast_node      = %Gherkin.AstNode{
       rule_type: :Background,
       sub_items: %{
@@ -178,7 +178,7 @@ defmodule GherkinAstBuilderTest do
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
 
-  test ".transform_node/1 when the rule type is :ScenarioDefinition with scenario transforms the node" do
+  test ".transform_node/2 when the rule type is :ScenarioDefinition with scenario transforms the node" do
     ast_node      = %Gherkin.AstNode{
       rule_type: :ScenarioDefinition,
       sub_items: %{
@@ -246,6 +246,23 @@ defmodule GherkinAstBuilderTest do
           location: %{line: 9, column: 5}
         }
       ]
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
+
+  test ".transform_node/2 when the rule type is :GherkinDocument transforms the node" do
+    ast_node      = %Gherkin.AstNode{
+      rule_type: :GherkinDocument,
+      sub_items: %{
+        :Feature => [%Gherkin.Token{matched_type: :Feature}]
+      }
+    }
+
+    expected_output = %{
+      type: :GherkinDocument,
+      feature: %Gherkin.Token{matched_type: :Feature},
+      comments: []
     }
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
