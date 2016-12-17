@@ -5,13 +5,7 @@ defmodule Gherkin.AstNode do
   def add(ast_node = %Gherkin.AstNode{rule_type: type, sub_items: items}, rule_type, object) do
     list = get_items(ast_node, rule_type) |> List.insert_at(-1, object)
 
-    sub_items = if Map.has_key?(items, rule_type) do
-      %{ items | rule_type => list }
-    else
-      Map.merge(items, %{rule_type => list})
-    end
-
-    %Gherkin.AstNode{rule_type: type, sub_items: sub_items}
+    %Gherkin.AstNode{rule_type: type, sub_items: Map.merge(items, %{rule_type => list})}
   end
 
   def get_items(nil, _rule_type), do: []
