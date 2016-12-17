@@ -6,28 +6,42 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def start_rule(stack, rule_type) do
-    List.insert_at(stack, -1, %Gherkin.AstNode{rule_type: rule_type})
+  def start_rule(context, rule_type) do
+    %{context | stack: List.insert_at(context.stack, -1, %Gherkin.AstNode{rule_type: rule_type})}
   end
 
-  def end_rule(stack) do
-    ast_node  = Enum.at(stack, -1)
-    new_stack = List.delete_at(stack, -1)
+  def end_rule(context) do
+    ast_node  = Enum.at(context.stack, -1)
+    new_stack = List.delete_at(context.stack, -1)
     new_node  = Gherkin.AstNode.add(current_node(new_stack), ast_node.rule_type, ast_node)
 
-    List.replace_at(new_stack, -1, new_node)
+    %{context | stack: List.replace_at(new_stack, -1, new_node)}
   end
 
   def current_node(stack) do
     List.last(stack)
   end
 
-  def build({stack, comments}, token = %{matched_type: :Comment}) do
-    {stack, List.insert_at(comments, -1, %{type: :Comment, location: token.location, text: token.matched_text})}
+  def build(context, token = %{matched_type: :Comment}) do
+    {
+      context.stack, 
+      List.insert_at(
+        context.comments, 
+        -1, 
+        %{type: :Comment, location: token.location, text: token.matched_text}
+      )
+    }
   end
 
-  def build({stack, comments}, token) do
-    {List.replace_at(stack, -1, Gherkin.AstNode.add(current_node(stack), token.matched_type, token)), comments}
+  def build(context, token) do
+    {
+      List.replace_at(
+        context.stack, 
+        -1, 
+        Gherkin.AstNode.add(current_node(context.stack) |> transform_node, token.matched_type, token)
+      ), 
+      context.comments
+    }
   end
 
   def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Step, sub_items: items}) do
@@ -42,7 +56,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :DocString, sub_items: _}) do
+  def transform_node(ast_node = %{rule_type: :DocString}) do
     separator    = Gherkin.AstNode.get_single(ast_node, :DocStringSeparator)
 
     content_type = if separator.matched_text == "" do
@@ -63,7 +77,7 @@ defmodule Gherkin.AstBuilder do
     }
   end
 
-  def transform_node(ast_node = %Gherkin.AstNode{rule_type: :Background, sub_items: _}) do
+  def transform_node(ast_node = %{rule_type: :Background}) do
     background_line = Gherkin.AstNode.get_single(ast_node, :BackgroundLine)
 
     %{
@@ -73,6 +87,21 @@ defmodule Gherkin.AstBuilder do
       name: background_line.matched_text,
       description: Gherkin.AstNode.get_single(ast_node, :Description),
       steps: Gherkin.AstNode.get_items(ast_node, :Step)
+    }
+  end
+
+  def transform_node(ast_node = %{rule_type: :ScenarioDefinition}) do
+    tags          = Gherkin.AstNode.get_tags(ast_node)
+    scenario_node = Gherkin.AstNode.get_single(ast_node, :Scenario)
+
+    %{
+      type: :Scenario,
+      tags: tags,
+      location: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).location,
+      keyword: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_keyword,
+      name: Gherkin.AstNode.get_single(scenario_node, :ScenarioLine).matched_text,
+      description: Gherkin.AstNode.get_single(scenario_node, :Description),
+      steps: Gherkin.AstNode.get_items(scenario_node, :Step)
     }
   end
 end
