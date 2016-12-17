@@ -267,4 +267,64 @@ defmodule GherkinAstBuilderTest do
 
     assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
   end
+
+  test ".transform_node/2 when the rule type is :Feature transforms the node" do
+    background_node = %Gherkin.AstNode{
+                        rule_type: :Background,
+                        sub_items: %{
+                          :Step => [
+                            %Gherkin.Token{
+                              matched_type: :Step,
+                              matched_keyword: "Given ",
+                              matched_text: "I am a user"
+                            }
+                          ]
+                        }
+                      }
+
+    ast_node        = %Gherkin.AstNode{
+      rule_type: :Feature,
+      sub_items: %{
+        :ScenarioDefinition => [%Gherkin.AstNode{rule_type: :ScenarioDefinition}],
+        :FeatureHeader => [
+          %Gherkin.AstNode{
+            rule_type: :FeatureHeader,
+            sub_items: %{
+              :Background => [background_node],
+              :FeatureLine => [
+                %Gherkin.Token{
+                  matched_type: :FeatureLine,
+                  matched_text: "Foobar",
+                  matched_keyword: "Feature",
+                  matched_gherkin_dialect: "en",
+                  location: %{line: 1, column: 1}
+                }
+              ], 
+              :Description => [
+                %Gherkin.Token{matched_type: :Description, location: %{line: 2, column: 3}}
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    expected_output = %{
+      type: :Feature,
+      tags: [],
+      location: %{line: 1, column: 1},
+      language: "en",
+      keyword: "Feature",
+      name: "Foobar",
+      description: %Gherkin.Token{matched_type: :Description, location: %{line: 2, column: 3}},
+      children: [
+        background_node,
+        %Gherkin.AstNode{
+          rule_type: :ScenarioDefinition
+        }
+      ]
+    }
+
+    assert Gherkin.AstBuilder.transform_node(ast_node) == expected_output
+  end
 end

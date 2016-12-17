@@ -121,6 +121,32 @@ defmodule Gherkin.AstBuilder do
     end
   end
 
+  def transform_node(ast_node = %{rule_type: :Feature}, _) do
+    header       = Gherkin.AstNode.get_single(ast_node, :FeatureHeader)
+    tags         = Gherkin.AstNode.get_tags(header)
+    feature_line = Gherkin.AstNode.get_single(header, :FeatureLine)
+    background   = Gherkin.AstNode.get_single(header, :Background)
+    description  = Gherkin.AstNode.get_single(header, :Description)
+    language     = feature_line.matched_gherkin_dialect
+
+    children     = if !background do
+      Gherkin.AstNode.get_items(ast_node, :ScenarioDefinition)
+    else
+      [background] ++ Gherkin.AstNode.get_items(ast_node, :ScenarioDefinition)
+    end
+
+    %{
+      type: :Feature,
+      tags: tags,
+      location: feature_line.location,
+      language: language,
+      keyword: feature_line.matched_keyword,
+      name: feature_line.matched_text,
+      description: description,
+      children: children
+    }
+  end
+
   def transform_node(ast_node = %{rule_type: :GherkinDocument}, comments) do
     %{
       type: :GherkinDocument,
