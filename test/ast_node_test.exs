@@ -26,9 +26,41 @@ defmodule GherkinAstNodeTest do
     assert Gherkin.AstNode.get_items(ast_node, :GherkinDocument) == []
   end
 
-  test "#get_single\/2 returns nil if no matching sub-items exist" do
+  test "#get_single/2 returns nil if no matching sub-items exist" do
     ast_node = %Gherkin.AstNode{}
 
     assert Gherkin.AstNode.get_single(ast_node, :GherkinDocument) == nil
+  end
+
+  test "#get_tags/1 returns tags" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :GherkinDocument,
+      sub_items: %{
+        :Tags => [
+          %Gherkin.AstNode{
+            rule_type: :Tags,
+            sub_items: %{
+              :TagLine => [
+                %Gherkin.Token{
+                  matched_type: :TagLine,
+                  location: %{line: 3, column: 3},
+                  matched_items: [
+                    %Gherkin.Tag{text: "@foo", column: 3},
+                    %Gherkin.Tag{text: "@bar", column: 8}
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    expected_output = [
+      %{type: :Tag, location: %{line: 3, column: 3}, text: "@foo"},
+      %{type: :Tag, location: %{line: 3, column: 8}, text: "@bar"}
+    ]
+
+    assert Gherkin.AstNode.get_tags(ast_node) == expected_output
   end
 end

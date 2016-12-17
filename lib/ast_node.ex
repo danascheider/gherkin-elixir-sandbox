@@ -26,4 +26,20 @@ defmodule Gherkin.AstNode do
   def get_single(ast_node, rule_type) do
     get_items(ast_node, rule_type) |> List.first
   end
+
+  def get_tags(ast_node) do
+    get_single(ast_node, :Tags) |> get_items(:TagLine) |> extract_tags
+  end
+
+  defp extract_tags([]), do: []
+
+  defp extract_tags([head | tail]) do
+    tag_items(head.matched_items, head.location) ++ extract_tags(tail)
+  end
+
+  defp tag_items([], _location), do: []
+
+  defp tag_items([head | tail], location) do
+    [%{type: :Tag, text: head.text, location: %{line: location.line, column: head.column}}] ++ tag_items(tail, location)
+  end
 end
