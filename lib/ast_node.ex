@@ -14,6 +14,8 @@ defmodule Gherkin.AstNode do
     %Gherkin.AstNode{rule_type: type, sub_items: sub_items}
   end
 
+  def get_items(nil, _rule_type), do: []
+
   def get_items(ast_node, rule_type) do
     if Map.has_key?(ast_node.sub_items, rule_type) do
       {:ok, items} = Map.fetch(ast_node.sub_items, rule_type)
@@ -30,6 +32,7 @@ defmodule Gherkin.AstNode do
   def get_tags(ast_node) do
     get_single(ast_node, :Tags) |> get_items(:TagLine) |> extract_tags
   end
+
 
   defp extract_tags([]), do: []
 

@@ -63,4 +63,13 @@ defmodule GherkinAstNodeTest do
 
     assert Gherkin.AstNode.get_tags(ast_node) == expected_output
   end
+
+  test "#get_tags/1 returns an empty list when there are no tags" do
+    ast_node = %Gherkin.AstNode{
+      rule_type: :GherkinDocument,
+      sub_items: %{}
+    }
+
+    assert Gherkin.AstNode.get_tags(ast_node) == []
+  end
 end
