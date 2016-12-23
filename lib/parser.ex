@@ -4,8 +4,7 @@ defmodule Gherkin.Parser do
     context      = %Gherkin.ParserContext{queue: empty_tokens, stack: [%Gherkin.AstNode{}], comments: []}
 
     {next_state, new_context} = build_ast({0, List.first(context.queue) |> Gherkin.TokenMatcher.match_token(context), context})
-    {next_state_2, new_context_2} = build_ast({next_state, List.first(new_context.queue) |> Gherkin.TokenMatcher.match_token(new_context), new_context})
-    new_context_2.stack
+    new_context
   end
 
   def parse(input, _url) do

@@ -105,7 +105,7 @@ defmodule GherkinAstBuilderTest do
 
     modified_token = %{type: :Comment, location: %{line: 2, column: 3}, text: "This is a comment"}
 
-    assert Gherkin.AstBuilder.build(input, token) == {[%Gherkin.AstNode{}], [modified_token]}
+    assert Gherkin.AstBuilder.build(input, token) == %{input | comments: [modified_token]}
   end
 
   test ".transform_node/2 when the rule type is :Step transforms the node" do
