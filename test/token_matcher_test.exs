@@ -17,7 +17,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches language token" do
@@ -37,7 +37,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches tag token" do
@@ -61,7 +61,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a feature line token" do
@@ -81,7 +81,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a scenario line" do
@@ -102,7 +102,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a background line" do
@@ -123,7 +123,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a scenario outline line" do
@@ -144,7 +144,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches an examples line" do
@@ -165,7 +165,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches an Empty token" do
@@ -184,7 +184,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a comment" do
@@ -204,7 +204,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches step tokens" do
@@ -264,7 +264,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 matches a docstring separator" do
@@ -294,7 +294,7 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 
   test ".match_tokens/2 sets Gherkin dialect correctly" do
@@ -332,6 +332,6 @@ defmodule GherkinTokenMatcherTest do
       }
     ]
 
-    assert Gherkin.TokenMatcher.match_tokens(input) == expected_output
+    assert Gherkin.TokenMatcher.match_tokens(input, %Gherkin.ParserContext{}) == expected_output
   end
 end

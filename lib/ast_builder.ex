@@ -10,12 +10,15 @@ defmodule Gherkin.AstBuilder do
     %{context | stack: List.insert_at(context.stack, -1, %Gherkin.AstNode{rule_type: rule_type})}
   end
 
-  def end_rule(context) do
-    ast_node  = Enum.at(context.stack, -1)
-    new_stack = List.delete_at(context.stack, -1)
-    new_node  = Gherkin.AstNode.add(current_node(new_stack), ast_node.rule_type, ast_node)
+  def end_rule(context, rule_type) do
+    ast_node         = List.last(context.stack)
+    new_stack        = List.delete_at(context.stack, -1)
+    new_current_node = current_node(context.stack) |> Gherkin.AstNode.add(ast_node)
 
-    %{context | stack: List.replace_at(new_stack, -1, new_node)}
+    %{
+      context |
+      stack: List.replace_at(new_stack, -1, new_current_node)
+    }
   end
 
   def current_node(stack) do
@@ -23,9 +26,9 @@ defmodule Gherkin.AstBuilder do
   end
 
   def build(context, token = %{matched_type: :Comment}) do
-    {
-      context.stack, 
-      List.insert_at(
+    %{
+      context | 
+      comments: List.insert_at(
         context.comments, 
         -1, 
         %{type: :Comment, location: token.location, text: token.matched_text}
@@ -36,7 +39,7 @@ defmodule Gherkin.AstBuilder do
   def build(context, token) do
     {
       List.replace_at(
-        context.stack, 
+        context.queue, 
         -1, 
         Gherkin.AstNode.add(
           current_node(context.stack) |> transform_node(context.comments), 
@@ -45,6 +48,19 @@ defmodule Gherkin.AstBuilder do
         )
       ), 
       context.comments
+    }
+
+    %{
+      context |
+      queue: List.replace_at(
+        context.queue, 
+        -1, 
+        Gherkin.AstNode.add(
+          current_node(context.stack) |> transform_node(context.comments),
+          token.matched_type,
+          token
+        )
+      )
     }
   end
 

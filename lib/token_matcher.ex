@@ -27,7 +27,7 @@ defmodule Gherkin.TokenMatcher do
     end
   end
 
-  defp match_token(%Gherkin.RawToken{line: %Gherkin.Line{text: nil, line_number: num}, location: _}, context) do
+  def match_token(%{line: %{text: nil, line_number: num}}, context) do
     %Gherkin.Token{
       matched_type: :EOF,
       matched_indent: 0,
@@ -36,7 +36,7 @@ defmodule Gherkin.TokenMatcher do
     }
   end
 
-  defp match_token(raw_token, context) do
+  def match_token(raw_token, context) do
     token = %Gherkin.Token{
       matched_indent: Gherkin.Line.indent(raw_token.line),
       location: %{line: raw_token.line.line_number, column: Gherkin.Line.indent(raw_token.line) + 1},

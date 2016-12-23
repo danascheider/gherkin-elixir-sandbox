@@ -73,6 +73,16 @@ defmodule GherkinAstBuilderTest do
       %Gherkin.AstNode{}
     ]
 
+    queue   = [
+      %Gherkin.Token{
+        matched_type: :FeatureLine,
+        matched_keyword: "Feature",
+        matched_text: "Do something",
+        matched_indent: 2,
+        location: %{line: 1, column: 3}
+      }
+    ]
+
     token   = %Gherkin.Token{matched_type: :FeatureLine}
     context = %Gherkin.ParserContext{stack: stack}
 
@@ -80,7 +90,17 @@ defmodule GherkinAstBuilderTest do
   end
 
   test ".build/2 adds comment token to the comments" do
-    input = %Gherkin.ParserContext{stack: [%Gherkin.AstNode{}]}
+    queue   = [
+      %Gherkin.Token{
+        matched_type: :FeatureLine,
+        matched_keyword: "Feature",
+        matched_text: "Do something",
+        matched_indent: 2,
+        location: %{line: 1, column: 3}
+      }
+    ]
+
+    input = %Gherkin.ParserContext{stack: [%Gherkin.AstNode{}], queue: queue}
     token = %Gherkin.Token{matched_type: :Comment, location: %{line: 2, column: 3}, matched_text: "This is a comment"}
 
     modified_token = %{type: :Comment, location: %{line: 2, column: 3}, text: "This is a comment"}
